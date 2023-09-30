@@ -1,0 +1,195 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  firstName String    @db.VarChar(255)
+  lastName  String    @db.VarChar(255)
+  userName  String    @unique @db.VarChar(255)
+  email     String    @unique @db.VarChar(255)
+  password  String    @db.VarChar(255)
+  phone     String    @unique
+  type      AdminType @relation(fields: [typeId], references: [id])
+  typeId    Int
+}
+
+model AdminType {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  name      String    @unique @db.VarChar(255)
+  Admin     Admin[]
+  Teacher   Teacher[]
+}
+
+model TeacherType {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  name      String    @unique @db.VarChar(255)
+  Teacher   Teacher[]
+}
+
+model Teacher {
+  id           Int            @id @default(autoincrement())
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  firstName    String         @db.VarChar(255)
+  lastName     String         @db.VarChar(255)
+  userName     String         @unique @db.VarChar(255)
+  email        String         @unique @db.VarChar(255)
+  password     String         @db.VarChar(255)
+  phone        String         @unique
+  type         TeacherType    @relation(fields: [typeId], references: [id])
+  adminType    AdminType      @relation(fields: [adminTypeId], references: [id])
+  typeId       Int
+  adminTypeId  Int
+  GroupTeacher GroupTeacher[]
+}
+
+model Sciense {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String   @db.VarChar(255)
+  Group     Group[]
+}
+
+model GroupType {
+  id            Int      @id @default(autoincrement())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  name          String   @unique @db.VarChar(255)
+  price         Float    @db.Real
+  totalDuration Float
+  Group         Group[]
+}
+
+model DayPart {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  name       String   @unique @db.VarChar(255)
+  startTime  DateTime @db.Date
+  finishTime DateTime @db.Date
+  Group      Group[]
+}
+
+model Lesson {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String   @db.VarChar(255)
+  subject   String   @db.VarChar(255)
+  room      Room     @relation(fields: [roomId], references: [id])
+  group     Group    @relation(fields: [groupId], references: [id])
+  roomId    Int
+  groupId   Int
+  Muster    Muster[]
+}
+
+model WeekPart {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String   @unique @db.VarChar(255)
+  Group     Group[]
+}
+
+model Group {
+  id           Int            @id @default(autoincrement())
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  name         String         @db.VarChar(255)
+  beginnedTime DateTime       @db.Date
+  isActive     Boolean        @default(false)
+  weekPart     WeekPart?      @relation(fields: [weekPartId], references: [id])
+  science      Sciense        @relation(fields: [scienseId], references: [id])
+  type         GroupType      @relation(fields: [typeId], references: [id])
+  dayPart      DayPart?       @relation(fields: [dayPartId], references: [id])
+  weekPartId   Int            @db.Integer
+  teacherId    Int            @db.Integer
+  scienseId    Int            @db.Integer
+  typeId       Int            @db.Integer
+  dayPartId    Int            @db.Integer
+  Student      Student[]
+  Lesson       Lesson[]
+  GroupTeacher GroupTeacher[]
+}
+
+model GroupTeacher {
+  teacher   Teacher? @relation(fields: [teacherId], references: [id])
+  group     Group?   @relation(fields: [groupId], references: [id])
+  teacherId Int
+  groupId   Int
+
+  @@id([teacherId, groupId])
+}
+
+model Room {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String   @unique @db.VarChar(255)
+  capacity  Int      @db.Integer
+  Lesson    Lesson[]
+}
+
+model Student {
+  id         Int      @id @default(autoincrement())
+  student_id Int      @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  firstName  String   @db.VarChar(255)
+  lastName   String   @db.VarChar(255)
+  userName   String?  @unique @db.VarChar(255)
+  email      String?  @unique @db.VarChar(255)
+  password   String   @db.VarChar(255)
+  phone      String   @unique
+  balance    Float    @default(0)
+  group      Group    @relation(fields: [groupId], references: [id])
+  groupId    Int
+  Muster     Muster[]
+}
+
+model Muster {
+  id        Int      @id @default(autoincrement())
+  isBeen    Boolean  @db.Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  student   Student  @relation(fields: [studentId], references: [id])
+  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+  studentId Int
+  lessonId  Int
+}
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  sendToId    Int      @unique
+  receivingId Int      @unique
+  cmount      Float
+}
+
+model totalInfo {
+  id           Int    @id @default(autoincrement())
+  name         String
+  totalStudent Int    @default(0)
+}
+
+model privateInfo {
+  id        Int   @id @default(autoincrement())
+  totalSumm Float @default(0)
+}

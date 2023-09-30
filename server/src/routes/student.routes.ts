@@ -1,0 +1,10 @@
+import express from 'express';
+import { addStudent, getStudent, getStudentByGroup, getStudents, studentLogin, studentRegister } from '../controller/student.controller';
+const studentRouter = express.Router();
+studentRouter.post('/add', addStudent);
+studentRouter.post('/register', studentRegister);
+studentRouter.post('/login', studentLogin);
+studentRouter.get('/all', getStudents);
+studentRouter.get('/groupId/:groupId', getStudentByGroup);
+studentRouter.get('/:id', getStudent);
+export default studentRouter;
