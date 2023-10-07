@@ -1,0 +1,74 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getGroup = exports.addGroup = void 0;
+const prisma_1 = __importDefault(require("../db/prisma"));
+const addGroup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { name, isActive, beginnedTime, dayPartId, weekPartId, teacherId, typeId, closeTime, scienseId, roomId } = req.body;
+        const hasGroup = yield prisma_1.default.group.findFirst({
+            where: {
+                weekPart: {
+                    id: weekPartId,
+                },
+                dayPart: {
+                    id: dayPartId,
+                },
+                room: {
+                    id: roomId,
+                },
+            },
+        });
+        if (hasGroup) {
+            return res.status(400).json({ error: 'Xona bu vaqtlarda band!' });
+        }
+        const group = yield prisma_1.default.group.create({
+            data: {
+                name,
+                beginnedTime: beginnedTime || null,
+                closeTime: closeTime || null,
+                weekPart: {
+                    connect: {
+                        id: weekPartId,
+                    },
+                },
+                type: {
+                    connect: {
+                        id: typeId,
+                    },
+                },
+                room: {
+                    connect: {
+                        id: roomId,
+                    },
+                },
+            },
+        });
+        if (!group) {
+            return res.status(500).json({ error: 'Group yaratilmadi!' });
+        }
+        res.status(200).json({ message: 'Group yaratildi!' });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Serverda xatolik yuz berdi!' });
+    }
+});
+exports.addGroup = addGroup;
+const getGroup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+    }
+    catch (error) { }
+});
+exports.getGroup = getGroup;

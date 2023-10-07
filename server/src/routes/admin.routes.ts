@@ -5,6 +5,6 @@ const adminRouter = express.Router();
 adminRouter.post('/register', adminRegister);
 adminRouter.post('/login', adminLogin);
 adminRouter.post('/add', supAdminAuth, addAdmin);
-adminRouter.get('/id/:id', getAdminAuth, getAdmin);
+adminRouter.get('/getUser',  getAdmin);
 adminRouter.get('/all', supAdminAuth, getAdmins);
 export default adminRouter;

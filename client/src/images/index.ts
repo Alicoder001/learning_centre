@@ -1,0 +1,17 @@
+export { default as eyesLight } from './eyesLogin.svg';
+export { default as eyesDark } from './eyesLoginDark.svg';
+export { default as backIconLight } from './backIconLoginLight.svg';
+export { default as backIconDark } from './backIconLoginLight.svg';
+export { default as moonLoginLight } from './moonLoginLight.svg';
+export { default as moonLoginDark } from './moonLoginLight.svg';
+export { default as loginBgLight } from './loginBgLight.jpg';
+export { default as logoLogin } from './logoLogin.svg';
+export { default as searchIconLight } from './searchIconLight.svg';
+export { default as searchIconDark } from './searchIconDark.svg';
+export { default as notificationLight } from './notificationLight.svg';
+export { default as notificationDark } from './notificationDark.svg';
+export { default as moonLight } from './moonLight.svg';
+export { default as moonDark } from './moonDark.svg';
+export { default as infoIconLight } from './infoIconLight.svg';
+export { default as infoIconDark } from './infoIconDark.svg';
+export { default as userImg } from './user.png';

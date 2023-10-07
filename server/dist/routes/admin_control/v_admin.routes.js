@@ -5,9 +5,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const __1 = require("../");
+const adminAuth_1 = __importDefault(require("../../middleware/adminAuth"));
 const VAdminRouter = express_1.default.Router();
 VAdminRouter.use('/admin', __1.adminRouter);
 VAdminRouter.use('/student', __1.studentRouter);
 VAdminRouter.use('/teacher', __1.teacherRouter);
+VAdminRouter.use('/teacherType', __1.teacherTypeRouter);
 VAdminRouter.use('/adminType', __1.adminTypeRouter);
+VAdminRouter.use('/dayPart', adminAuth_1.default, __1.dayPartRouter);
+VAdminRouter.use('/science', adminAuth_1.default, __1.scienceRouter);
+VAdminRouter.use('/groupType', adminAuth_1.default, __1.groupTypeRouter);
+VAdminRouter.use('/group', adminAuth_1.default, __1.groupRouter);
+VAdminRouter.use('/lesson', __1.lessonRouter);
+VAdminRouter.use('/room', __1.roomRouter);
 exports.default = VAdminRouter;

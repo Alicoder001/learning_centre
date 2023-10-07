@@ -18,9 +18,8 @@ const supAdminAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     var _a;
     try {
         const token = (_a = req.cookies) === null || _a === void 0 ? void 0 : _a.token;
-        console.log(req);
         if (!token) {
-            return res.status(500).json({ error: 'Serverda xatolik?????' });
+            return res.status(500).json({ error: 'Serverda xatolik?' });
         }
         const validToken = jsonwebtoken_1.default.verify(token, 'secret');
         if (!validToken) {

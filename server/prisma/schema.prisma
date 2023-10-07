@@ -11,34 +11,32 @@ datasource db {
 }
 
 model Admin {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  firstName String    @db.VarChar(255)
-  lastName  String    @db.VarChar(255)
-  userName  String    @unique @db.VarChar(255)
-  email     String    @unique @db.VarChar(255)
-  password  String    @db.VarChar(255)
-  phone     String    @unique
-  type      AdminType @relation(fields: [typeId], references: [id])
-  typeId    Int
+  id         Int       @id @default(autoincrement())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  firstName  String    @db.VarChar(255)
+  lastName   String    @db.VarChar(255)
+  userName   String    @unique @db.VarChar(255)
+  email      String    @unique @db.VarChar(255)
+  password   String    @db.VarChar(255)
+  phone      String    @unique
+  type       AdminType @relation(fields: [typeId], references: [id])
+  typeId     Int
+  userType   UserType  @relation(fields: [userTypeId], references: [id])
+  userTypeId Int
 }
 
 model AdminType {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  name      String    @unique @db.VarChar(255)
-  Admin     Admin[]
-  Teacher   Teacher[]
+  id      Int       @id @default(autoincrement())
+  name    String    @unique @db.VarChar(255)
+  Admin   Admin[]
+  Teacher Teacher[]
 }
 
 model TeacherType {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  name      String    @unique @db.VarChar(255)
-  Teacher   Teacher[]
+  id      Int       @id @default(autoincrement())
+  name    String    @unique @db.VarChar(255)
+  Teacher Teacher[]
 }
 
 model Teacher {
@@ -52,85 +50,91 @@ model Teacher {
   password     String         @db.VarChar(255)
   phone        String         @unique
   type         TeacherType    @relation(fields: [typeId], references: [id])
-  adminType    AdminType      @relation(fields: [adminTypeId], references: [id])
+  adminType    AdminType?     @relation(fields: [adminTypeId], references: [id])
   typeId       Int
-  adminTypeId  Int
+  adminTypeId  Int?
   GroupTeacher GroupTeacher[]
+  userType     UserType       @relation(fields: [userTypeId], references: [id])
+  userTypeId   Int
 }
 
 model Sciense {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name      String   @db.VarChar(255)
-  Group     Group[]
+  id        Int         @id @default(autoincrement())
+  name      String      @db.VarChar(255)
+  GroupType GroupType[]
+}
+
+model UserType {
+  id      Int       @id @default(autoincrement())
+  name    String
+  Admin   Admin[]
+  Teacher Teacher[]
+  Student Student[]
 }
 
 model GroupType {
-  id            Int      @id @default(autoincrement())
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  name          String   @unique @db.VarChar(255)
-  price         Float    @db.Real
+  id            Int     @id @default(autoincrement())
+  name          String  @unique @db.VarChar(255)
+  price         Float   @db.Real
   totalDuration Float
+  sciense       Sciense @relation(fields: [scienseId], references: [id])
+  scienseId     Int
   Group         Group[]
 }
 
 model DayPart {
-  id         Int      @id @default(autoincrement())
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  name       String   @unique @db.VarChar(255)
-  startTime  DateTime @db.Date
-  finishTime DateTime @db.Date
-  Group      Group[]
+  id           Int    @id @default(autoincrement())
+  part         String @unique @db.VarChar(255)
+  durationTime Float? @db.Real
+
+  Group Group[]
 }
 
 model Lesson {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name      String   @db.VarChar(255)
-  subject   String   @db.VarChar(255)
-  room      Room     @relation(fields: [roomId], references: [id])
-  group     Group    @relation(fields: [groupId], references: [id])
-  roomId    Int
-  groupId   Int
-  Muster    Muster[]
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  name         String   @db.VarChar(255)
+  subject      String?  @db.VarChar(255)
+  day          Int
+  startedTime  DateTime
+  isAttandance Boolean  @default(false)
+  group        Group    @relation(fields: [groupId], references: [id])
+  groupId      Int
+  Muster       Muster[]
+  isNotDone    Boolean?
 }
 
 model WeekPart {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name      String   @unique @db.VarChar(255)
-  Group     Group[]
+  id    Int     @id @default(autoincrement())
+  part  String  @unique @db.VarChar(255)
+  Group Group[]
 }
 
 model Group {
   id           Int            @id @default(autoincrement())
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
-  name         String         @db.VarChar(255)
-  beginnedTime DateTime       @db.Date
+  name         String         @unique @db.VarChar(255)
+  beginnedTime DateTime?
+  closeTime    DateTime?
   isActive     Boolean        @default(false)
   weekPart     WeekPart?      @relation(fields: [weekPartId], references: [id])
-  science      Sciense        @relation(fields: [scienseId], references: [id])
   type         GroupType      @relation(fields: [typeId], references: [id])
   dayPart      DayPart?       @relation(fields: [dayPartId], references: [id])
-  weekPartId   Int            @db.Integer
-  teacherId    Int            @db.Integer
-  scienseId    Int            @db.Integer
+  weekPartId   Int?           @db.Integer
   typeId       Int            @db.Integer
-  dayPartId    Int            @db.Integer
   Student      Student[]
   Lesson       Lesson[]
   GroupTeacher GroupTeacher[]
+  dayPartId    Int?
+  room         Room           @relation(fields: [roomId], references: [id])
+  roomId       Int
 }
 
 model GroupTeacher {
-  teacher   Teacher? @relation(fields: [teacherId], references: [id])
-  group     Group?   @relation(fields: [groupId], references: [id])
+  teacher   Teacher @relation(fields: [teacherId], references: [id])
+  group     Group   @relation(fields: [groupId], references: [id])
   teacherId Int
   groupId   Int
 
@@ -138,17 +142,16 @@ model GroupTeacher {
 }
 
 model Room {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name      String   @unique @db.VarChar(255)
-  capacity  Int      @db.Integer
-  Lesson    Lesson[]
+  id       Int    @id @default(autoincrement())
+  name     String @unique @db.VarChar(255)
+  capacity Int    @db.Integer
+
+  Group Group[]
 }
 
 model Student {
   id         Int      @id @default(autoincrement())
-  student_id Int      @unique
+  studentId  Int      @unique
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   firstName  String   @db.VarChar(255)
@@ -158,14 +161,16 @@ model Student {
   password   String   @db.VarChar(255)
   phone      String   @unique
   balance    Float    @default(0)
-  group      Group    @relation(fields: [groupId], references: [id])
+  group      Group?   @relation(fields: [groupId], references: [id])
   groupId    Int
   Muster     Muster[]
+  userType   UserType @relation(fields: [userTypeId], references: [id])
+  userTypeId Int
 }
 
 model Muster {
   id        Int      @id @default(autoincrement())
-  isBeen    Boolean  @db.Boolean
+  isBeen    Boolean? @db.Boolean
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   student   Student  @relation(fields: [studentId], references: [id])
@@ -180,16 +185,33 @@ model Transaction {
   updatedAt   DateTime @updatedAt
   sendToId    Int      @unique
   receivingId Int      @unique
-  cmount      Float
+  amount      Float
 }
 
-model totalInfo {
-  id           Int    @id @default(autoincrement())
-  name         String
-  totalStudent Int    @default(0)
+model TotalInfo {
+  id          Int         @id @default(autoincrement())
+  name        String
+  complete    Boolean     @default(false)
+  controlType CenterType? @relation(fields: [typeId], references: [id])
+  typeId      Int?
 }
 
 model privateInfo {
-  id        Int   @id @default(autoincrement())
-  totalSumm Float @default(0)
+  id         Int         @id @default(autoincrement())
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  totalSumm  Float       @default(0)
+  centerType CenterType? @relation(fields: [typeId], references: [id])
+  typeId     Int?
+}
+
+model CenterType {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  title       String        @unique
+  description String?       @db.Text
+  info        String?       @db.Text
+  link        String
+  privateInfo privateInfo[]
+  TotalInfo   TotalInfo[]
 }

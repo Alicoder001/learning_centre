@@ -23,6 +23,10 @@ const adminLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             where: {
                 email,
             },
+            include: {
+                type: true,
+                userType: true,
+            },
         });
         if (!admin) {
             return res.status(404).json({ error: 'Email xato!' });
@@ -34,7 +38,10 @@ const adminLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         }
         const token = jsonwebtoken_1.default.sign({ adminId: admin.id }, 'secret', { expiresIn: '7d' });
         res.cookie('token', token, { httpOnly: true, secure: true });
-        res.status(200).json({ message: 'Admin muvaffaqiyatli tizimga kirdi!' });
+        res.status(200).json({
+            user: { token, userType: admin.userType.name, fistName: admin.firstName, lastName: admin.lastName, adminType: admin.type.name },
+            message: 'Admin muvaffaqiyatli tizimga kirdi!',
+        });
     }
     catch (error) {
         console.log(error);
@@ -44,10 +51,10 @@ const adminLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.adminLogin = adminLogin;
 const adminRegister = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const data = req.body;
+        const { firstName, lastName, userName, email, password, phone, typeId, userTypeId } = req.body;
         const isHasEmail = yield prisma_1.default.admin.findUnique({
             where: {
-                email: data.email,
+                email: email,
             },
         });
         if (isHasEmail) {
@@ -55,7 +62,7 @@ const adminRegister = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
         const isHasUserName = yield prisma_1.default.admin.findUnique({
             where: {
-                userName: data.userName,
+                userName: userName,
             },
         });
         if (isHasUserName) {
@@ -63,7 +70,7 @@ const adminRegister = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
         const isHasPhone = yield prisma_1.default.admin.findUnique({
             where: {
-                phone: data.phone,
+                phone: phone,
             },
         });
         if (isHasPhone) {
@@ -71,7 +78,7 @@ const adminRegister = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
         const isTeacherAdmin = yield prisma_1.default.adminType.findUnique({
             where: {
-                id: +data.typeId,
+                id: +typeId,
                 name: 'teacher',
             },
         });
@@ -80,23 +87,40 @@ const adminRegister = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
         const isSuperAdmin = yield prisma_1.default.adminType.findUnique({
             where: {
-                id: +data.typeId,
+                id: +typeId,
                 name: 'super',
             },
         });
-        const isHasSuperAdmin = yield prisma_1.default.admin.findFirst({
+        const isHasSuperAdmin = yield prisma_1.default.adminType.findFirst({
             where: {
-                type: {
-                    name: 'super',
-                },
+                OR: [
+                    {
+                        Admin: {
+                            some: {
+                                typeId: isSuperAdmin === null || isSuperAdmin === void 0 ? void 0 : isSuperAdmin.id,
+                            },
+                        },
+                    },
+                    {
+                        Teacher: {
+                            some: {
+                                typeId: isSuperAdmin === null || isSuperAdmin === void 0 ? void 0 : isSuperAdmin.id,
+                            },
+                        },
+                    },
+                ],
             },
         });
         if (isSuperAdmin && isHasSuperAdmin) {
             return res.status(409).json({ error: 'Super admin allaqachon mavjud!' });
         }
-        const hashPassword = yield bcrypt_1.default.hash(data.password, 10);
+        const hashPassword = yield bcrypt_1.default.hash(password, 10);
         const admin = yield prisma_1.default.admin.create({
-            data: Object.assign(Object.assign({}, data), { password: hashPassword }),
+            data: { firstName, lastName, userName, email, password: hashPassword, phone, typeId, userTypeId },
+            include: {
+                type: true,
+                userType: true,
+            },
         });
         if (!admin) {
             return res.status(500).json({
@@ -105,7 +129,10 @@ const adminRegister = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
         const token = jsonwebtoken_1.default.sign({ adminId: admin.id }, 'secret', { expiresIn: '7d' });
         res.cookie('token', token, { httpOnly: true, secure: true });
-        res.status(200).json({ message: "Admin muvaffaqiyatli ro'yxatdan o'tdi!" });
+        res.status(200).json({
+            user: { token, userType: admin.userType.name, fistName: admin.firstName, lastName: admin.lastName, adminType: admin.type.name },
+            message: "Admin muvaffaqiyatli ro'yxatdan o'tdi!",
+        });
     }
     catch (error) {
         console.log(error);
@@ -155,11 +182,24 @@ const addAdmin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 name: 'super',
             },
         });
-        const isHasSuperAdmin = yield prisma_1.default.admin.findFirst({
+        const isHasSuperAdmin = yield prisma_1.default.adminType.findFirst({
             where: {
-                type: {
-                    name: 'super',
-                },
+                OR: [
+                    {
+                        Admin: {
+                            some: {
+                                typeId: isSuperAdmin === null || isSuperAdmin === void 0 ? void 0 : isSuperAdmin.id,
+                            },
+                        },
+                    },
+                    {
+                        Teacher: {
+                            some: {
+                                typeId: isSuperAdmin === null || isSuperAdmin === void 0 ? void 0 : isSuperAdmin.id,
+                            },
+                        },
+                    },
+                ],
             },
         });
         if (isSuperAdmin && isHasSuperAdmin) {
@@ -174,8 +214,6 @@ const addAdmin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 error: 'Serverda xatolik yuz berdi!',
             });
         }
-        const token = jsonwebtoken_1.default.sign({ adminId: admin.id }, 'secret', { expiresIn: '7d' });
-        res.cookie('token', token, { httpOnly: true, secure: true });
         res.status(200).json({ message: "Admin muvaffaqiyatli qo'shildi!" });
     }
     catch (error) {
@@ -185,15 +223,27 @@ const addAdmin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.addAdmin = addAdmin;
 const getAdmin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
-        const id = +req.params.id;
+        const token = ((_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1]) || '';
+        const id = jsonwebtoken_1.default.verify(token, 'secret').adminId;
+        if (!id) {
+            return res.status(404).json({ error: 'Token xatosi!' });
+        }
         const admin = yield prisma_1.default.admin.findUnique({
             where: { id },
+            include: {
+                type: true,
+                userType: true,
+            },
         });
         if (!admin) {
             return res.status(404).json({ error: 'Admin topilmadi!' });
         }
-        res.status(200).json({ admin });
+        res.status(200).json({
+            user: { token, userType: admin.userType.name, fistName: admin.firstName, lastName: admin.lastName, adminType: admin.type.name },
+            message: 'Autentifikatsiya muvaqffaqiyatli amalga oshirildi!',
+        });
     }
     catch (error) {
         console.log(error);

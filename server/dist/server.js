@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = __importDefault(require("./app"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const utils_1 = require("./utils");
 dotenv_1.default.config;
 function runServer() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -23,3 +24,5 @@ function runServer() {
     });
 }
 runServer();
+(0, utils_1.createLesson)();
+utils_1.everyHour;

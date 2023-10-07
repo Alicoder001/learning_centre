@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import prisma from '../db/prisma';
 export const adminLogin = async (req: Request, res: Response) => {
 	try {
@@ -8,6 +8,10 @@ export const adminLogin = async (req: Request, res: Response) => {
 		const admin = await prisma.admin.findUnique({
 			where: {
 				email,
+			},
+			include: {
+				type: true,
+				userType: true,
 			},
 		});
 		if (!admin) {
@@ -20,7 +24,10 @@ export const adminLogin = async (req: Request, res: Response) => {
 		}
 		const token = jwt.sign({ adminId: admin.id }, 'secret', { expiresIn: '7d' });
 		res.cookie('token', token, { httpOnly: true, secure: true });
-		res.status(200).json({ message: 'Admin muvaffaqiyatli tizimga kirdi!' });
+		res.status(200).json({
+			user: { token, userType: admin.userType.name, fistName: admin.firstName, lastName: admin.lastName, adminType: admin.type.name },
+			message: 'Admin muvaffaqiyatli tizimga kirdi!',
+		});
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({ error: 'Serverda xatolik yuz berdi!' });
@@ -28,10 +35,10 @@ export const adminLogin = async (req: Request, res: Response) => {
 };
 export const adminRegister = async (req: Request, res: Response) => {
 	try {
-		const data = req.body;
+		const { firstName, lastName, userName, email, password, phone, typeId, userTypeId } = req.body;
 		const isHasEmail = await prisma.admin.findUnique({
 			where: {
-				email: data.email,
+				email: email,
 			},
 		});
 		if (isHasEmail) {
@@ -39,7 +46,7 @@ export const adminRegister = async (req: Request, res: Response) => {
 		}
 		const isHasUserName = await prisma.admin.findUnique({
 			where: {
-				userName: data.userName,
+				userName: userName,
 			},
 		});
 		if (isHasUserName) {
@@ -47,7 +54,7 @@ export const adminRegister = async (req: Request, res: Response) => {
 		}
 		const isHasPhone = await prisma.admin.findUnique({
 			where: {
-				phone: data.phone,
+				phone: phone,
 			},
 		});
 		if (isHasPhone) {
@@ -55,7 +62,7 @@ export const adminRegister = async (req: Request, res: Response) => {
 		}
 		const isTeacherAdmin = await prisma.adminType.findUnique({
 			where: {
-				id: +data.typeId,
+				id: +typeId,
 				name: 'teacher',
 			},
 		});
@@ -64,23 +71,40 @@ export const adminRegister = async (req: Request, res: Response) => {
 		}
 		const isSuperAdmin = await prisma.adminType.findUnique({
 			where: {
-				id: +data.typeId,
+				id: +typeId,
 				name: 'super',
 			},
 		});
-		const isHasSuperAdmin = await prisma.admin.findFirst({
+		const isHasSuperAdmin = await prisma.adminType.findFirst({
 			where: {
-				type: {
-					name: 'super',
-				},
+				OR: [
+					{
+						Admin: {
+							some: {
+								typeId: isSuperAdmin?.id,
+							},
+						},
+					},
+					{
+						Teacher: {
+							some: {
+								typeId: isSuperAdmin?.id,
+							},
+						},
+					},
+				],
 			},
 		});
 		if (isSuperAdmin && isHasSuperAdmin) {
 			return res.status(409).json({ error: 'Super admin allaqachon mavjud!' });
 		}
-		const hashPassword = await bcrypt.hash(data.password, 10);
+		const hashPassword = await bcrypt.hash(password, 10);
 		const admin = await prisma.admin.create({
-			data: { ...data, password: hashPassword },
+			data: { firstName, lastName, userName, email, password: hashPassword, phone, typeId, userTypeId },
+			include: {
+				type: true,
+				userType: true,
+			},
 		});
 		if (!admin) {
 			return res.status(500).json({
@@ -89,7 +113,10 @@ export const adminRegister = async (req: Request, res: Response) => {
 		}
 		const token = jwt.sign({ adminId: admin.id }, 'secret', { expiresIn: '7d' });
 		res.cookie('token', token, { httpOnly: true, secure: true });
-		res.status(200).json({ message: "Admin muvaffaqiyatli ro'yxatdan o'tdi!" });
+		res.status(200).json({
+			user: { token, userType: admin.userType.name, fistName: admin.firstName, lastName: admin.lastName, adminType: admin.type.name },
+			message: "Admin muvaffaqiyatli ro'yxatdan o'tdi!",
+		});
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({ error: 'Serverda xatolik yuz berdi!' });
@@ -137,11 +164,24 @@ export const addAdmin = async (req: Request, res: Response) => {
 				name: 'super',
 			},
 		});
-		const isHasSuperAdmin = await prisma.admin.findFirst({
+		const isHasSuperAdmin = await prisma.adminType.findFirst({
 			where: {
-				type: {
-					name: 'super',
-				},
+				OR: [
+					{
+						Admin: {
+							some: {
+								typeId: isSuperAdmin?.id,
+							},
+						},
+					},
+					{
+						Teacher: {
+							some: {
+								typeId: isSuperAdmin?.id,
+							},
+						},
+					},
+				],
 			},
 		});
 		if (isSuperAdmin && isHasSuperAdmin) {
@@ -156,8 +196,7 @@ export const addAdmin = async (req: Request, res: Response) => {
 				error: 'Serverda xatolik yuz berdi!',
 			});
 		}
-		const token = jwt.sign({ adminId: admin.id }, 'secret', { expiresIn: '7d' });
-		res.cookie('token', token, { httpOnly: true, secure: true });
+
 		res.status(200).json({ message: "Admin muvaffaqiyatli qo'shildi!" });
 	} catch (error) {
 		console.log(error);
@@ -166,14 +205,26 @@ export const addAdmin = async (req: Request, res: Response) => {
 };
 export const getAdmin = async (req: Request, res: Response) => {
 	try {
-		const id = +req.params.id;
+		const token = req.headers.authorization?.split(' ')[1] || '';
+		const id = (jwt.verify(token, 'secret') as JwtPayload).adminId;
+		if (!id) {
+			return res.status(404).json({ error: 'Token xatosi!' });
+		}
 		const admin = await prisma.admin.findUnique({
 			where: { id },
+			include: {
+				type: true,
+				userType: true,
+			},
 		});
 		if (!admin) {
 			return res.status(404).json({ error: 'Admin topilmadi!' });
 		}
-		res.status(200).json({ admin });
+
+		res.status(200).json({
+			user: { token, userType: admin.userType.name, fistName: admin.firstName, lastName: admin.lastName, adminType: admin.type.name },
+			message: 'Autentifikatsiya muvaqffaqiyatli amalga oshirildi!',
+		});
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({ error: 'Serverda xatolik yuz berdi!' });

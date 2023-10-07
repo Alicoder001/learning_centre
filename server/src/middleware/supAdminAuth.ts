@@ -8,9 +8,8 @@ export interface customRequest extends Request {
 const supAdminAuth = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const token = req.cookies?.token;
-		console.log(req);
 		if (!token) {
-			return res.status(500).json({ error: 'Serverda xatolik?????' });
+			return res.status(500).json({ error: 'Serverda xatolik?' });
 		}
 		const validToken = jwt.verify(token, 'secret') as JwtPayload;
 		if (!validToken) {

@@ -1,0 +1,69 @@
+:root {
+	--bg: #f4f7fe;
+	--title-color: #2b3674;
+	--subt-color: #a3aed0;
+	--primary-btn-bg: #4318ff;
+	--card-bg: #fff;
+	--card-wrap: #fff;
+	--shadow-color: 0px 18px 40px 0px rgba(112, 144, 176, 0.12);
+	--line-color: #e0e5f2;
+	--item-hover: rgba(140, 177, 247, 0.5);
+	--box-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.08);
+}
+.dark {
+	--bg: #0b1437;
+	--title-color: #fff;
+	--subt-color: #a3aed0;
+	--primary-btn-bg: #3965ff;
+	--card-bg: #1b254b;
+	--card-wrap: #111c44;
+	--shadow-color: 0;
+	--line-color: rgba(255, 255, 255, 0.1);
+}
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	height: 100%;
+	font-size: 62.5%;
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	background-color: var(--bg);
+	font-family: 'Plus Jakarta Sans', sans-serif;
+}
+#root {
+	height: 100%;
+}
+.App {
+	height: 100%;
+}
+ul {
+	list-style: none;
+}
+a {
+	text-decoration: none;
+}
+.container {
+	max-width: 144rem;
+	width: 100%;
+	padding: 0 2rem;
+	margin: 0 auto;
+	height: 100%;
+}
+h1 {
+	color: var(--title-color);
+}
+h2,
+h3 {
+	color: var(--title-color);
+}
+p {
+	color: var(--subt-color);
+}
