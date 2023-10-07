@@ -30,7 +30,7 @@ function App() {
 				<Route path='login/:type' element={<Login />} />
 				<Route path='register' element={<Register />} />
 				<Route path='admin' element={<AdmintLayout />}>
-					<Route path='dashboard' element={<AdminDashboard />} />
+					<Route index element={<AdminDashboard />} />
 					<Route path='transaction' element={<AdminTransaction />} />
 					<Route path='analystic' element={<Analystics />} />
 					<Route path='teachers' element={<Teachers />} />

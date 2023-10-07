@@ -16,11 +16,14 @@ const initialState = {
 	controlType: null,
 	studentCount: 0,
 	teacherCount: 0,
+	teachers: [],
+	groups: [],
 	error: null,
 	isSucces: false,
 	controlTypes: null,
 	message: null,
 	totalFinished: false,
+	lessons: [],
 };
 export const totalSlice = createSlice({
 	name: 'total',
@@ -30,19 +33,22 @@ export const totalSlice = createSlice({
 			state.isLoading = true;
 		},
 		getTotalSucces(state, action) {
-			const { name, link, controlType, students, teachers, types, id } = action.payload;
+			const { name, link, controlType, studentCount, teacherCount, types, id, lessons, teachers, groups } = action.payload;
 			console.log(controlType);
 			state.isLoading = false;
 			state.name = name || '';
 			state.link = link || '';
 			state.controlType = controlType || null;
-			state.studentCount = students || 0;
-			state.teacherCount = teachers || 0;
+			state.studentCount = studentCount || 0;
+			state.teacherCount = teacherCount || 0;
 			state.controlTypes = types || null;
 			state.totalId = id;
 			state.error = null;
 			state.isSucces = true;
 			state.totalFinished = true;
+			state.lessons = lessons;
+			state.teachers = teachers;
+			state.groups = groups;
 		},
 		getTotalFailure(state, action) {
 			state.isLoading = false;

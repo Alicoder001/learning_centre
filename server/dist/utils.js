@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.everyMinutes = exports.everyHour = exports.createLesson = void 0;
+exports.everyMinutes = exports.everyHour = exports.createLesson = exports.currentTime = void 0;
 const date_fns_1 = require("date-fns");
 const prisma_1 = __importDefault(require("./db/prisma"));
 const node_schedule_1 = __importDefault(require("node-schedule"));
@@ -25,6 +25,7 @@ const currentTime = () => {
     const ymd = (0, date_fns_1.format)(new Date(), 'yyyy-MM-dd');
     return { currentMin, currentHour, currentDay, weekDay, fullTime, ymd };
 };
+exports.currentTime = currentTime;
 const getCurrentGroup = () => __awaiter(void 0, void 0, void 0, function* () {
     const groups = yield prisma_1.default.group.findMany({
         where: {
@@ -32,7 +33,7 @@ const getCurrentGroup = () => __awaiter(void 0, void 0, void 0, function* () {
         },
         include: { weekPart: true, dayPart: true },
     });
-    const filterGroup = groups.filter((item) => { var _a; return (_a = item.weekPart) === null || _a === void 0 ? void 0 : _a.part.split('-').includes(currentTime().weekDay.toString()); });
+    const filterGroup = groups.filter((item) => { var _a; return (_a = item.weekPart) === null || _a === void 0 ? void 0 : _a.part.split('-').includes((0, exports.currentTime)().weekDay.toString()); });
     return filterGroup;
 });
 const vaqtZonasi = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -46,7 +47,7 @@ const createLesson = () => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const hasLesson = yield prisma_1.default.lesson.findFirst({
                 where: {
-                    day: currentTime().currentDay,
+                    day: (0, exports.currentTime)().currentDay,
                     groupId: item.id,
                 },
             });
@@ -59,8 +60,8 @@ const createLesson = () => __awaiter(void 0, void 0, void 0, function* () {
                                 id: item.id,
                             },
                         },
-                        day: currentTime().currentDay,
-                        startedTime: timeZoneFormatter(`${currentTime().ymd} ${(_a = item.dayPart) === null || _a === void 0 ? void 0 : _a.part}:00.000`),
+                        day: (0, exports.currentTime)().currentDay,
+                        startedTime: timeZoneFormatter(`${(0, exports.currentTime)().ymd} ${(_a = item.dayPart) === null || _a === void 0 ? void 0 : _a.part}:00.000`),
                     },
                 });
             }

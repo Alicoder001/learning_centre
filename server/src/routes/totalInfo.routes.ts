@@ -20,14 +20,43 @@ totalInfoRouter.get('/all', async (req, res) => {
 		});
 		const total = response[0];
 		const { controlType, ...rest } = total;
-		const students = await prisma.student.count({});
-		const teachers = await prisma.teacher.count({});
+		const studentCount = await prisma.student.count({});
+		const teacherCount = await prisma.teacher.count({});
+		const groups = await prisma.group.findMany({});
+		const teachers = await prisma.group.findMany({});
+		const lessons = await prisma.lesson.findMany({
+			where: {
+				day: new Date().getDate(),
+				isAttandance: false,
+			},
+			include: {
+				group: {
+					include: {
+						GroupTeacher: {
+							include: {
+								teacher: true,
+							},
+						},
+						dayPart: true,
+						room: true,
+						type: {
+							include: {
+								sciense: true,
+							},
+						},
+					},
+				},
+			},
+		});
 		res.status(200).json({
 			...rest,
 			link: controlType?.link ? controlType.link : '',
 			controlType: controlType?.name ? controlType.name : null,
-			students,
+			studentCount,
+			teacherCount,
+			lessons,
 			teachers,
+			groups,
 			types,
 		});
 	} catch (error) {

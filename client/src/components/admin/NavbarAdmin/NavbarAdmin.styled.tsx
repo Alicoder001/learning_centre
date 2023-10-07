@@ -56,7 +56,7 @@ export const NavbarAdminStyled = styled.nav`
 		border-radius: 3rem;
 		background-color: var(--card-wrap);
 		gap: 2rem;
-		box-shadow: var(--box-shadow);
+		box-shadow: var(--navbar-shadow);
 		@media screen and (max-width: 1200px) {
 			gap: 1.5rem;
 		}
@@ -103,7 +103,7 @@ export const NavbarAdminStyled = styled.nav`
 				background-color: var(--card-bg);
 				top: 100%;
 				right: -1rem;
-				box-shadow: var(--box-shadow);
+				box-shadow: var(--navbar-shadow);
 				ul {
 					display: flex;
 					flex-direction: column;

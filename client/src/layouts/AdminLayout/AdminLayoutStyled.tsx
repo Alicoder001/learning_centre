@@ -12,7 +12,8 @@ export const AdminLayoutStyled = styled.div`
 	}
 	main {
 		height: 100%;
-		background-color: yellow;
-		overflow: hidden;
+		overflow-y: scroll;
+		padding: 0 2rem;
+
 	}
 `;

@@ -1,5 +1,6 @@
 import express from 'express';
 import prisma from '../db/prisma';
+import { currentTime } from '../utils';
 
 const lessonRouter = express.Router();
 lessonRouter.post('/add', async (req, res) => {
@@ -9,8 +10,8 @@ lessonRouter.post('/add', async (req, res) => {
 			data: {
 				name,
 				subject,
-				roomId,
 				groupId,
+			
 			},
 		});
 		if (!response) {
@@ -20,6 +21,37 @@ lessonRouter.post('/add', async (req, res) => {
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({ error: 'Serverda xatolik yuz berdi!!' });
+	}
+});
+lessonRouter.get('/today', async (req, res) => {
+	try {
+		const lessons = await prisma.lesson.findMany({
+			where: {
+				day: new Date().getDate(),
+				isAttandance: false,
+			},
+			include: {
+				group: {
+					include: {
+						GroupTeacher: {
+							include: {
+								teacher: true,
+							},
+						},
+						dayPart: true,
+						room: true,
+						type: {
+							include: {
+								sciense: true,
+							},
+						},
+					},
+				},
+			},
+		});
+		res.status(200).json({ lessons });
+	} catch (error) {
+		res.status(500).json({ error: 'Serverda xatolik yuz berdi!' });
 	}
 });
 export default lessonRouter;

@@ -22,7 +22,6 @@ lessonRouter.post('/add', (req, res) => __awaiter(void 0, void 0, void 0, functi
             data: {
                 name,
                 subject,
-                roomId,
                 groupId,
             },
         });
@@ -34,6 +33,38 @@ lessonRouter.post('/add', (req, res) => __awaiter(void 0, void 0, void 0, functi
     catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Serverda xatolik yuz berdi!!' });
+    }
+}));
+lessonRouter.get('/today', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const lessons = yield prisma_1.default.lesson.findMany({
+            where: {
+                day: new Date().getDate(),
+                isAttandance: false,
+            },
+            include: {
+                group: {
+                    include: {
+                        GroupTeacher: {
+                            include: {
+                                teacher: true,
+                            },
+                        },
+                        dayPart: true,
+                        room: true,
+                        type: {
+                            include: {
+                                sciense: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+        res.status(200).json({ lessons });
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Serverda xatolik yuz berdi!' });
     }
 }));
 exports.default = lessonRouter;

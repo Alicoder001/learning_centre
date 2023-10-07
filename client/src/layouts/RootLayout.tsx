@@ -8,10 +8,14 @@ import { userSignFailure, userSignSucces } from '../redux/slice/userSlice';
 
 const RootLayout = () => {
 	const dispatch = useDispatch();
-	const { controlType, link } = useSelector((state: RootState) => state.total);
+	const { controlType, link, totalFinished } = useSelector((state: RootState) => state.total);
 	const navigate = useNavigate();
 	const { isLoggedIn, userType, userFinished } = useSelector((state: RootState) => state.user);
-	
+	// useEffect(() => {
+	// 	if (isLoggedIn && userFinished && controlType && totalFinished) {
+	// 		navigate('/admin');
+	// 	}
+	// }, [isLoggedIn, userFinished, totalFinished, controlType]);
 	const getUser = async () => {
 		const user = JSON.parse(localStorage.getItem('userInfo') as any);
 		console.log(user);

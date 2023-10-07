@@ -8,8 +8,21 @@
 	--shadow-color: 0px 18px 40px 0px rgba(112, 144, 176, 0.12);
 	--line-color: #e0e5f2;
 	--item-hover: rgba(140, 177, 247, 0.5);
-	--box-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.08);
+	--navbar-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.12);
+	--box-shadow: 0 0 40px 0px rgba(112, 144, 176, 0.12);
 }
+/* ::-webkit-scrollbar {
+	width: 0px;
+	height: 1px;
+}
+::-webkit-scrollbar-thumb {
+	background-color: rgb(114, 113, 113);
+	border-radius: 10px;
+	height: 200px;
+}
+::-webkit-scrollbar-track {
+	background-color: transparent;
+} */
 .dark {
 	--bg: #0b1437;
 	--title-color: #fff;

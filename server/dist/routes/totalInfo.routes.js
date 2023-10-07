@@ -45,10 +45,39 @@ totalInfoRouter.get('/all', (req, res) => __awaiter(void 0, void 0, void 0, func
         });
         const total = response[0];
         const { controlType } = total, rest = __rest(total, ["controlType"]);
-        const students = yield prisma_1.default.student.count({});
-        const teachers = yield prisma_1.default.teacher.count({});
-        res.status(200).json(Object.assign(Object.assign({}, rest), { link: (controlType === null || controlType === void 0 ? void 0 : controlType.link) ? controlType.link : '', controlType: (controlType === null || controlType === void 0 ? void 0 : controlType.name) ? controlType.name : null, students,
+        const studentCount = yield prisma_1.default.student.count({});
+        const teacherCount = yield prisma_1.default.teacher.count({});
+        const groups = yield prisma_1.default.group.findMany({});
+        const teachers = yield prisma_1.default.group.findMany({});
+        const lessons = yield prisma_1.default.lesson.findMany({
+            where: {
+                day: new Date().getDate(),
+                isAttandance: false,
+            },
+            include: {
+                group: {
+                    include: {
+                        GroupTeacher: {
+                            include: {
+                                teacher: true,
+                            },
+                        },
+                        dayPart: true,
+                        room: true,
+                        type: {
+                            include: {
+                                sciense: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+        res.status(200).json(Object.assign(Object.assign({}, rest), { link: (controlType === null || controlType === void 0 ? void 0 : controlType.link) ? controlType.link : '', controlType: (controlType === null || controlType === void 0 ? void 0 : controlType.name) ? controlType.name : null, studentCount,
+            teacherCount,
+            lessons,
             teachers,
+            groups,
             types }));
     }
     catch (error) {

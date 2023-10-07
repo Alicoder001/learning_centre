@@ -1,7 +1,7 @@
 import { addHours, format } from 'date-fns';
 import prisma from './db/prisma';
 import schedule from 'node-schedule';
-const currentTime = () => {
+export const currentTime = () => {
 	const currentMin = new Date().getMinutes();
 	const currentHour = new Date().getHours();
 	const currentDay = new Date().getDate();
@@ -10,6 +10,7 @@ const currentTime = () => {
 	const ymd = format(new Date(), 'yyyy-MM-dd');
 	return { currentMin, currentHour, currentDay, weekDay, fullTime, ymd };
 };
+
 const getCurrentGroup = async () => {
 	const groups = await prisma.group.findMany({
 		where: {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SidebarStyled } from './Sidebar.styled';
 import { FaHome, FaChalkboardTeacher } from 'react-icons/fa';
 import { MdGroups2 } from 'react-icons/md';
@@ -7,7 +7,7 @@ import { GiHamburgerMenu } from 'react-icons/gi';
 import { GrTransaction } from 'react-icons/gr';
 import { SiSimpleanalytics } from 'react-icons/si';
 import { PiStudentFill } from 'react-icons/pi';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 interface adminProps {
 	isShowSidebar: Boolean;
 	setShowSidebar: Function;
@@ -15,20 +15,20 @@ interface adminProps {
 
 const menuList = [
 	{
-		link: 'dashboard',
+		link: '',
 		name: 'Dashboard',
 		img: FaHome,
 	},
-	{
-		link: 'transaction',
-		name: 'Tranzaksiya',
-		img: GrTransaction,
-	},
-	{
-		link: 'analystic',
-		name: 'Analatika',
-		img: SiSimpleanalytics,
-	},
+	// {
+	// 	link: 'transaction',
+	// 	name: 'Tranzaksiya',
+	// 	img: GrTransaction,
+	// },
+	// {
+	// 	link: 'analystic',
+	// 	name: 'Analatika',
+	// 	img: SiSimpleanalytics,
+	// },
 	{
 		link: 'teachers',
 		name: "O'qituvchilar",
@@ -46,9 +46,14 @@ const menuList = [
 	},
 ];
 const Sidebar = (props: adminProps) => {
-	const [page, setPage] = useState('dashboard');
+	const [page, setPage] = useState('');
 	const { isShowSidebar, setShowSidebar } = props;
-	console.log(isShowSidebar);
+
+	const location = useLocation();
+	useEffect(() => {
+		setPage(location?.pathname?.split('/').at(-1) || ('' as string));
+	}, [location]);
+
 	return (
 		<SidebarStyled>
 			<div className={`sidebar ${!isShowSidebar && 'close'}`}>
@@ -79,7 +84,7 @@ const Sidebar = (props: adminProps) => {
 									setPage(item.link);
 								}}
 								key={item.link}
-								className={`sidebar-item ${page === item.link ? 'active' : ''}`}>
+								className={`sidebar-item ${page === 'admin' && item.link === '' ? 'active' : page === item.link ? 'active' : ''}`}>
 								<div className='sidebar-item__wrap'>
 									<div className='sidebar-item__iconWrap'>
 										<item.img className='icon' size={24} color={`${page === item.link ? '#4318FF' : 'black'}`} />
