@@ -7,7 +7,7 @@ export interface customRequest extends Request {
 
 const getAdminAuth = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const token = req.cookies?.token;
+			const token = req.headers.authorization?.split(' ')[1] || '';
 		const adminId = +req.params.id;
 		if (!token) {
 			return res.status(500).json({ error: 'Serverda xatolik!' });

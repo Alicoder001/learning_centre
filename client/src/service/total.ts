@@ -7,7 +7,7 @@ export async function getTotalInfo(dispatch: AppDispatch) {
 
 	try {
 		const response = await axios('http://localhost:3000/api/info/all');
-		dispatch(getTotalSucces(response.data));
+		dispatch(getTotalSucces(response?.data));
 	} catch (error) {
 		console.log(error);
 		dispatch(getTotalFailure(error));

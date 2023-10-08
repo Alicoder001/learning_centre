@@ -17,7 +17,7 @@ const prisma_1 = __importDefault(require("../db/prisma"));
 const getAdminAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        const token = (_a = req.cookies) === null || _a === void 0 ? void 0 : _a.token;
+        const token = ((_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1]) || '';
         const adminId = +req.params.id;
         if (!token) {
             return res.status(500).json({ error: 'Serverda xatolik!' });

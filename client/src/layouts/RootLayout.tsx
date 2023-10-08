@@ -3,17 +3,21 @@ import { useSelector } from 'react-redux';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { RootState } from '../redux/store/intex';
 import { useDispatch } from 'react-redux';
-import axios from 'axios';
+import axios from '../service/api';
 import { userSignFailure, userSignSucces } from '../redux/slice/userSlice';
 
 const RootLayout = () => {
 	const dispatch = useDispatch();
-	const { controlType, link, totalFinished } = useSelector((state: RootState) => state.total);
+	const { controlType, link, totalFinished, defaultLink } = useSelector((state: RootState) => state.total);
 	const navigate = useNavigate();
 	const { isLoggedIn, userType, userFinished } = useSelector((state: RootState) => state.user);
 	// useEffect(() => {
-	// 	if (isLoggedIn && userFinished && controlType && totalFinished) {
-	// 		navigate('/admin');
+	// 	if (!isLoggedIn && userFinished && controlType && totalFinished) {
+	// 		navigate('/');
+	// 	} else if (isLoggedIn && userFinished && controlType && totalFinished) {
+	// 		navigate(`/${userType}`);
+	// 	} else if (isLoggedIn && userFinished && controlType && totalFinished) {
+	// 		navigate('/plan');
 	// 	}
 	// }, [isLoggedIn, userFinished, totalFinished, controlType]);
 	const getUser = async () => {
@@ -21,14 +25,7 @@ const RootLayout = () => {
 		console.log(user);
 		if (user?.token) {
 			try {
-				const userInfo = await axios.get(
-					`http://localhost:3000/api/${controlType ? link : ''}${user?.userType ? user?.userType + '/' : ''}getUser`,
-					{
-						headers: {
-							Authorization: `Bearer ${user?.token}`,
-						},
-					},
-				);
+				const userInfo = await axios.get(`${controlType ? link : ''}${user?.userType ? user?.userType + '/' : ''}getUser`);
 				dispatch(userSignSucces({ response: userInfo?.data }));
 			} catch (error) {
 				console.log(error);

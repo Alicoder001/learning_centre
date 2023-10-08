@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import { updateTotalFailure, updateTotalStart, updateTotalSucces } from '../../../redux/slice/totalSlice';
 
 const Plan = () => {
-	const { controlTypes, totalId } = useSelector((state: RootState) => state.total);
+	const { controlTypes, totalId }: any = useSelector((state: RootState) => state.total);
 	console.log(controlTypes);
 	const dispatch = useDispatch();
 	const handleClick = async (typeId: number | null) => {

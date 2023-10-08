@@ -73,9 +73,9 @@ exports.createLesson = createLesson;
 const checkerTime = (time) => {
     const vaqt = timeZoneFormatter(`2023-10-07 10:00:00.000`);
     const hozirgi = timeZoneFormatter(`${time}`);
-    return vaqt > hozirgi;
+    return { boolean: vaqt > hozirgi, ayirma: (vaqt - hozirgi) };
 };
-exports.everyHour = node_schedule_1.default.scheduleJob('0 0 0 * * *', () => __awaiter(void 0, void 0, void 0, function* () {
+exports.everyHour = node_schedule_1.default.scheduleJob('0 0 * * * *', () => __awaiter(void 0, void 0, void 0, function* () {
     (0, exports.createLesson)();
 }));
 const checkLesson = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -88,8 +88,7 @@ const checkLesson = () => __awaiter(void 0, void 0, void 0, function* () {
         });
         console.log(lessons);
         lessons.forEach((item) => __awaiter(void 0, void 0, void 0, function* () {
-            const dif = checkerTime(item.startedTime);
-            console.log(dif);
+            const dif = checkerTime(item.startedTime).boolean;
             if (!dif) {
                 yield prisma_1.default.lesson.update({
                     where: {

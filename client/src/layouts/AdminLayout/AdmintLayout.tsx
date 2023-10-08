@@ -17,17 +17,19 @@ const AdmintLayout = () => {
 		}
 	}, [isLoggedIn, userFinished]);
 	return (
-		isLoggedIn && (
-			<AdminLayoutStyled className='admin-layout'>
-				<Sidebar isShowSidebar={isShowSidebar} setShowSidebar={setShowSidebar} />
-				<div className='wrapper'>
-					<NavbarAdmin isShowSidebar={isShowSidebar} setShowSidebar={setShowSidebar} />
-					<main>
-						<Outlet />
-					</main>
-				</div>
-			</AdminLayoutStyled>
-		)
+		<AdminLayoutStyled className='admin-layout'>
+			{isLoggedIn && (
+				<>
+					<Sidebar isShowSidebar={isShowSidebar} setShowSidebar={setShowSidebar} />
+					<div className='wrapper'>
+						<NavbarAdmin isShowSidebar={isShowSidebar} setShowSidebar={setShowSidebar} />
+						<main>
+							<Outlet />
+						</main>
+					</div>
+				</>
+			)}
+		</AdminLayoutStyled>
 	);
 };
 

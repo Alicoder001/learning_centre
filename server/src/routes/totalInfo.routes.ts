@@ -3,6 +3,8 @@ import prisma from '../db/prisma';
 const totalInfoRouter = express.Router();
 totalInfoRouter.get('/all', async (req, res) => {
 	try {
+		const token = req.cookies?.token;
+		console.log(token);
 		const response = await prisma.totalInfo.findMany({
 			include: {
 				controlType: true,
@@ -24,6 +26,11 @@ totalInfoRouter.get('/all', async (req, res) => {
 		const teacherCount = await prisma.teacher.count({});
 		const groups = await prisma.group.findMany({});
 		const teachers = await prisma.group.findMany({});
+		const groupType = await prisma.groupType.findMany({});
+		const dayPart = await prisma.dayPart.findMany({});
+		const teacherName = await prisma.teacher.findMany({});
+		const weekPart = await prisma.weekPart.findMany({});
+		const rooms = await prisma.room.findMany({});
 		const lessons = await prisma.lesson.findMany({
 			where: {
 				day: new Date().getDate(),
@@ -55,9 +62,15 @@ totalInfoRouter.get('/all', async (req, res) => {
 			studentCount,
 			teacherCount,
 			lessons,
+			rooms,
 			teachers,
+			token,
 			groups,
 			types,
+			dayPart,
+			teacherName,
+			weekPart,
+			groupType,
 		});
 	} catch (error) {
 		res.status(500).json({ error: 'Serverda xatolik yuz berdi!' });

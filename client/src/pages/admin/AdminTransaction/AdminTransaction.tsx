@@ -1,9 +1,8 @@
-import React from 'react'
+import React from 'react';
+import { AdminTransactionsStyled } from './AdminTransaction.styled';
 
 const AdminTransaction = () => {
-  return (
-    <div>AdminTransaction</div>
-  )
-}
+	return <AdminTransactionsStyled>Transactions</AdminTransactionsStyled>;
+};
 
-export default AdminTransaction
+export default AdminTransaction;

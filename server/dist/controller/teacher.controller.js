@@ -17,24 +17,39 @@ const prisma_1 = __importDefault(require("../db/prisma"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const teacherLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         const { email, password } = req.body;
-        const admin = yield prisma_1.default.admin.findUnique({
+        const teacher = yield prisma_1.default.teacher.findUnique({
             where: {
                 email,
             },
+            include: {
+                userType: true,
+                adminType: true,
+                type: true,
+            },
         });
-        if (!admin) {
+        if (!teacher) {
             return res.status(404).json({ error: 'Email xato!' });
         }
-        const isValidPassword = yield bcrypt_1.default.compare(password, admin.password);
+        const isValidPassword = yield bcrypt_1.default.compare(password, teacher.password);
         console.log(isValidPassword);
         if (!isValidPassword) {
             return res.status(401).json({ error: 'Parol xato' });
         }
-        const token = jsonwebtoken_1.default.sign({ adminId: admin.id }, 'secret', { expiresIn: '7d' });
-        res.cookie('token', token, { httpOnly: true, secure: true });
-        res.status(200).json({ message: 'Admin muvaffaqiyatli tizimga kirdi!' });
+        const token = jsonwebtoken_1.default.sign({ teacherId: teacher.id }, 'secret', { expiresIn: '7d' });
+        res.status(200).json({
+            user: {
+                token,
+                userType: teacher.userType.name,
+                fistName: teacher.firstName,
+                lastName: teacher.lastName,
+                adminType: (_a = teacher.adminType) === null || _a === void 0 ? void 0 : _a.name,
+                teacherType: teacher.type.name,
+            },
+            message: 'Admin muvaffaqiyatli tizimga kirdi!',
+        });
     }
     catch (error) {
         console.log(error);
@@ -43,7 +58,7 @@ const teacherLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.teacherLogin = teacherLogin;
 const teacherRegister = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _b, _c;
     try {
         const { firstName, lastName, userName, email, password, phone, typeId, adminTypeId, groupId, userTypeId } = req.body;
         const isHasEmail = yield prisma_1.default.teacher.findUnique({
@@ -143,14 +158,13 @@ const teacherRegister = (req, res) => __awaiter(void 0, void 0, void 0, function
             });
             if (!hasGroupId) {
                 const token = jsonwebtoken_1.default.sign({ teacherId: teacher.id }, 'secret', { expiresIn: '7d' });
-                res.cookie('token', token, { httpOnly: true, secure: true });
                 return res.status(200).json({
                     user: {
                         token,
                         userType: teacher.userType.name,
                         fistName: teacher.firstName,
                         lastName: teacher.lastName,
-                        adminType: (_a = teacher.adminType) === null || _a === void 0 ? void 0 : _a.name,
+                        adminType: (_b = teacher.adminType) === null || _b === void 0 ? void 0 : _b.name,
                         teacherType: teacher.type.name,
                     },
                     message: "O'qituvchi muvaffaqiyatli ro'yxatdan o'tdi!",
@@ -172,7 +186,7 @@ const teacherRegister = (req, res) => __awaiter(void 0, void 0, void 0, function
                 userType: teacher.userType.name,
                 fistName: teacher.firstName,
                 lastName: teacher.lastName,
-                adminType: (_b = teacher.adminType) === null || _b === void 0 ? void 0 : _b.name,
+                adminType: (_c = teacher.adminType) === null || _c === void 0 ? void 0 : _c.name,
                 teacherType: teacher.type.name,
             },
             message: "O'qituvchi muvaffaqiyatli ro'yxatdan o'tdi!",
@@ -302,9 +316,9 @@ const addTeacher = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.addTeacher = addTeacher;
 const getTeacher = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _c;
+    var _d;
     try {
-        const token = ((_c = req.headers.authorization) === null || _c === void 0 ? void 0 : _c.split(' ')[1]) || '';
+        const token = ((_d = req.headers.authorization) === null || _d === void 0 ? void 0 : _d.split(' ')[1]) || '';
         const id = jsonwebtoken_1.default.verify(token, 'secret').teacherId;
         if (id) {
             return res.status(404).json({ error: 'Token xatosi!' });

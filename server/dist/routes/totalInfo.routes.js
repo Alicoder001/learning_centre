@@ -27,7 +27,10 @@ const express_1 = __importDefault(require("express"));
 const prisma_1 = __importDefault(require("../db/prisma"));
 const totalInfoRouter = express_1.default.Router();
 totalInfoRouter.get('/all', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
+        const token = (_a = req.cookies) === null || _a === void 0 ? void 0 : _a.token;
+        console.log(token);
         const response = yield prisma_1.default.totalInfo.findMany({
             include: {
                 controlType: true,
@@ -49,6 +52,11 @@ totalInfoRouter.get('/all', (req, res) => __awaiter(void 0, void 0, void 0, func
         const teacherCount = yield prisma_1.default.teacher.count({});
         const groups = yield prisma_1.default.group.findMany({});
         const teachers = yield prisma_1.default.group.findMany({});
+        const groupType = yield prisma_1.default.groupType.findMany({});
+        const dayPart = yield prisma_1.default.dayPart.findMany({});
+        const teacherName = yield prisma_1.default.teacher.findMany({});
+        const weekPart = yield prisma_1.default.weekPart.findMany({});
+        const rooms = yield prisma_1.default.room.findMany({});
         const lessons = yield prisma_1.default.lesson.findMany({
             where: {
                 day: new Date().getDate(),
@@ -76,16 +84,22 @@ totalInfoRouter.get('/all', (req, res) => __awaiter(void 0, void 0, void 0, func
         res.status(200).json(Object.assign(Object.assign({}, rest), { link: (controlType === null || controlType === void 0 ? void 0 : controlType.link) ? controlType.link : '', controlType: (controlType === null || controlType === void 0 ? void 0 : controlType.name) ? controlType.name : null, studentCount,
             teacherCount,
             lessons,
+            rooms,
             teachers,
+            token,
             groups,
-            types }));
+            types,
+            dayPart,
+            teacherName,
+            weekPart,
+            groupType }));
     }
     catch (error) {
         res.status(500).json({ error: 'Serverda xatolik yuz berdi!' });
     }
 }));
 totalInfoRouter.patch('/update/id/:infoId/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _b;
     try {
         const infoId = +req.params.infoId;
         const { typeId } = req.body;
@@ -116,7 +130,7 @@ totalInfoRouter.patch('/update/id/:infoId/', (req, res) => __awaiter(void 0, voi
                 controlType: true,
             },
         });
-        res.status(200).json({ controlType: ((_a = updateInfo === null || updateInfo === void 0 ? void 0 : updateInfo.controlType) === null || _a === void 0 ? void 0 : _a.name) ? updateInfo.controlType.name : null, message: "Ma'lumot yangilandi!" });
+        res.status(200).json({ controlType: ((_b = updateInfo === null || updateInfo === void 0 ? void 0 : updateInfo.controlType) === null || _b === void 0 ? void 0 : _b.name) ? updateInfo.controlType.name : null, message: "Ma'lumot yangilandi!" });
     }
     catch (error) {
         res.status(500).json({ error: 'Serverda xatolik yuz berdi!' });

@@ -240,6 +240,7 @@ const getAdmin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (!admin) {
             return res.status(404).json({ error: 'Admin topilmadi!' });
         }
+        res.cookie('token', token, { httpOnly: true, secure: true });
         res.status(200).json({
             user: { token, userType: admin.userType.name, fistName: admin.firstName, lastName: admin.lastName, adminType: admin.type.name },
             message: 'Autentifikatsiya muvaqffaqiyatli amalga oshirildi!',

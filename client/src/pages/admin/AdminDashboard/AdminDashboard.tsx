@@ -5,6 +5,7 @@ import { RootState } from '../../../redux/store/intex';
 
 const AdminDashboard = () => {
 	let { studentCount, teacherCount, lessons } = useSelector((state: RootState) => state.total);
+
 	return (
 		<AdminDashboardStyled className='.dashboard'>
 			<ul className='category'>
@@ -40,7 +41,7 @@ const AdminDashboard = () => {
 								<div className='lessons-item__center'>
 									<h2 className='lessons-item__title'>{item?.group?.room?.name}</h2>
 									<p className='lessons-item__subt'>
-										{item.group.GroupTeacher[0].teacher.firstName} {item.group.GroupTeacher[0].teacher.lastName}
+										{item.group.GroupTeacher[0]?.teacher?.firstName} {item.group.GroupTeacher[0]?.teacher?.lastName}
 									</p>
 								</div>
 								<div className='lessons-item__right'>

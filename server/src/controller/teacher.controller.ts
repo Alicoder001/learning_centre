@@ -5,22 +5,37 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 export const teacherLogin = async (req: Request, res: Response) => {
 	try {
 		const { email, password } = req.body;
-		const admin = await prisma.admin.findUnique({
+		const teacher = await prisma.teacher.findUnique({
 			where: {
 				email,
 			},
+			include: {
+				userType: true,
+				adminType: true,
+				type: true,
+			},
 		});
-		if (!admin) {
+		if (!teacher) {
 			return res.status(404).json({ error: 'Email xato!' });
 		}
-		const isValidPassword = await bcrypt.compare(password, admin.password);
+		const isValidPassword = await bcrypt.compare(password, teacher.password);
 		console.log(isValidPassword);
 		if (!isValidPassword) {
 			return res.status(401).json({ error: 'Parol xato' });
 		}
-		const token = jwt.sign({ adminId: admin.id }, 'secret', { expiresIn: '7d' });
-		res.cookie('token', token, { httpOnly: true, secure: true });
-		res.status(200).json({ message: 'Admin muvaffaqiyatli tizimga kirdi!' });
+		const token = jwt.sign({ teacherId: teacher.id }, 'secret', { expiresIn: '7d' });
+		res.status(200).json({
+			user: {
+				token,
+				userType: teacher.userType.name,
+				fistName: teacher.firstName,
+				lastName: teacher.lastName,
+				adminType: teacher.adminType?.name,
+				teacherType: teacher.type.name,
+			},
+
+			message: 'Admin muvaffaqiyatli tizimga kirdi!',
+		});
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({ error: 'Serverda xatolik yuz berdi!' });
@@ -127,7 +142,7 @@ export const teacherRegister = async (req: Request, res: Response) => {
 			});
 			if (!hasGroupId) {
 				const token = jwt.sign({ teacherId: teacher.id }, 'secret', { expiresIn: '7d' });
-				res.cookie('token', token, { httpOnly: true, secure: true });
+
 				return res.status(200).json({
 					user: {
 						token,

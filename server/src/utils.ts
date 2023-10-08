@@ -61,11 +61,12 @@ const checkerTime = (time: Date) => {
 	const vaqt = timeZoneFormatter(`2023-10-07 10:00:00.000`);
 	const hozirgi = timeZoneFormatter(`${time}`);
 
-	return vaqt > hozirgi;
+	return { boolean: vaqt > hozirgi, ayirma: (vaqt - hozirgi) };
 };
-export const everyHour = schedule.scheduleJob('0 0 0 * * *', async () => {
+export const everyHour = schedule.scheduleJob('0 0 * * * *', async () => {
 	createLesson();
 });
+
 const checkLesson = async () => {
 	try {
 		const lessons = await prisma.lesson.findMany({
@@ -74,10 +75,10 @@ const checkLesson = async () => {
 				isAttandance: false,
 			},
 		});
-		console.log(lessons)
+		console.log(lessons);
 		lessons.forEach(async (item) => {
-			const dif = checkerTime(item.startedTime);
-			console.log(dif)
+			const dif = checkerTime(item.startedTime).boolean;
+
 			if (!dif) {
 				await prisma.lesson.update({
 					where: {

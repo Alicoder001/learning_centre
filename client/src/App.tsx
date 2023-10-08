@@ -17,6 +17,8 @@ import AdminGroups from './pages/admin/AdminGroups/AdminGroups';
 import Students from './pages/admin/Students/Students';
 import Teachers from './pages/admin/Teachers/Teachers';
 import Analystics from './pages/admin/Analystics/Analystics';
+import AdminGroupCreate from './pages/admin/AdminGroups/AdminGroupCreate/AdminGroupCreate';
+import Home from './pages/Home.tsx/Home';
 
 function App() {
 	const dispatch = useDispatch();
@@ -27,6 +29,7 @@ function App() {
 	const routes = createBrowserRouter(
 		createRoutesFromElements(
 			<Route path='/' element={<RootLayout />}>
+				<Route index element={<Home />} />
 				<Route path='login/:type' element={<Login />} />
 				<Route path='register' element={<Register />} />
 				<Route path='admin' element={<AdmintLayout />}>
@@ -36,6 +39,7 @@ function App() {
 					<Route path='teachers' element={<Teachers />} />
 					<Route path='students' element={<Students />} />
 					<Route path='groups' element={<AdminGroups />} />
+					<Route path='group-create' element={<AdminGroupCreate />} />
 				</Route>
 				<Route path='plan' element={<Plan />} />
 			</Route>,

@@ -3,7 +3,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import prisma from '../db/prisma';
 
 export const adminChecker = async (req: Request, res: Response, typeName: string) => {
-	const token = req.cookies?.token;
+	const token = req.headers.authorization?.split(' ')[1] || '';
 	if (!token) {
 		return { error: 'Serverda xatolik', status: 500 };
 	}

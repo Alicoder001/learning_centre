@@ -48,6 +48,8 @@ export const SidebarStyled = styled.div`
 		overflow: hidden;
 		transition: 0.3s;
 		height: 100%;
+		
+		opacity: 0.99;
 		&-list {
 			width: 100%;
 			display: flex;

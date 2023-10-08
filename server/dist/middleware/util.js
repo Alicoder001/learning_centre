@@ -17,7 +17,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const prisma_1 = __importDefault(require("../db/prisma"));
 const adminChecker = (req, res, typeName) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    const token = (_a = req.cookies) === null || _a === void 0 ? void 0 : _a.token;
+    const token = ((_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1]) || '';
     if (!token) {
         return { error: 'Serverda xatolik', status: 500 };
     }

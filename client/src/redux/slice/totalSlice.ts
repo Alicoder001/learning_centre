@@ -9,6 +9,7 @@ export interface totalInfoI {
 	contolType: string;
 }
 const initialState = {
+	defaultLink: 'http://localhost:3000/api/',
 	totalId: null,
 	isLoading: false,
 	name: null,
@@ -24,6 +25,11 @@ const initialState = {
 	message: null,
 	totalFinished: false,
 	lessons: [],
+	teacherName: [],
+	dayPart: [],
+	weekPart: [],
+	groupType: [],
+	rooms: null,
 };
 export const totalSlice = createSlice({
 	name: 'total',
@@ -32,23 +38,26 @@ export const totalSlice = createSlice({
 		getTotalStart(state) {
 			state.isLoading = true;
 		},
-		getTotalSucces(state, action) {
-			const { name, link, controlType, studentCount, teacherCount, types, id, lessons, teachers, groups } = action.payload;
-			console.log(controlType);
+		getTotalSucces(state, action) {			
 			state.isLoading = false;
-			state.name = name || '';
-			state.link = link || '';
-			state.controlType = controlType || null;
-			state.studentCount = studentCount || 0;
-			state.teacherCount = teacherCount || 0;
-			state.controlTypes = types || null;
-			state.totalId = id;
+			state.name = action?.payload?.name || '';
+			state.link = action?.payload?.link || '';
+			state.controlType = action?.payload?.controlType || null;
+			state.studentCount = action?.payload?.studentCount || 0;
+			state.teacherCount = action?.payload?.teacherCount || 0;
+			state.controlTypes = action?.payload?.types || null;
+			state.totalId = action?.payload?.id;
 			state.error = null;
 			state.isSucces = true;
 			state.totalFinished = true;
-			state.lessons = lessons;
-			state.teachers = teachers;
-			state.groups = groups;
+			state.lessons = action?.payload?.lessons;
+			state.teachers = action?.payload?.teachers;
+			state.groups = action?.payload?.groups;
+			state.teacherName = action?.payload?.teacherName;
+			state.dayPart = action?.payload?.dayPart;
+			state.weekPart = action?.payload?.weekPart;
+			state.groupType = action?.payload?.groupType;
+			state.rooms = action?.payload?.rooms;
 		},
 		getTotalFailure(state, action) {
 			state.isLoading = false;
