@@ -19,6 +19,7 @@ import Teachers from './pages/admin/Teachers/Teachers';
 import Analystics from './pages/admin/Analystics/Analystics';
 import AdminGroupCreate from './pages/admin/AdminGroups/AdminGroupCreate/AdminGroupCreate';
 import Home from './pages/Home.tsx/Home';
+import TeacherLayout from './layouts/TeacherLayout/TeacherLayout';
 
 function App() {
 	const dispatch = useDispatch();
@@ -33,6 +34,15 @@ function App() {
 				<Route path='login/:type' element={<Login />} />
 				<Route path='register' element={<Register />} />
 				<Route path='admin' element={<AdmintLayout />}>
+					<Route index element={<AdminDashboard />} />
+					<Route path='transaction' element={<AdminTransaction />} />
+					<Route path='analystic' element={<Analystics />} />
+					<Route path='teachers' element={<Teachers />} />
+					<Route path='students' element={<Students />} />
+					<Route path='groups' element={<AdminGroups />} />
+					<Route path='group-create' element={<AdminGroupCreate />} />
+				</Route>
+				<Route path='admin' element={<TeacherLayout />}>
 					<Route index element={<AdminDashboard />} />
 					<Route path='transaction' element={<AdminTransaction />} />
 					<Route path='analystic' element={<Analystics />} />
