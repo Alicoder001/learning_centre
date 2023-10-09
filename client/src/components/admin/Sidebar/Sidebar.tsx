@@ -8,6 +8,8 @@ import { GrTransaction } from 'react-icons/gr';
 import { SiSimpleanalytics } from 'react-icons/si';
 import { PiStudentFill } from 'react-icons/pi';
 import { Link, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/store/intex';
 interface adminProps {
 	isShowSidebar: Boolean;
 	setShowSidebar: Function;
@@ -48,7 +50,7 @@ const menuList = [
 const Sidebar = (props: adminProps) => {
 	const [page, setPage] = useState('');
 	const { isShowSidebar, setShowSidebar } = props;
-
+	const { isDark } = useSelector((state: RootState) => state.total);
 	const location = useLocation();
 	useEffect(() => {
 		setPage(location?.pathname?.split('/').at(-1) || ('' as string));
@@ -64,7 +66,7 @@ const Sidebar = (props: adminProps) => {
 						onClick={(e) => {
 							setShowSidebar(false);
 						}}>
-						<MdOutlineArrowBackIos size={20} />
+						<MdOutlineArrowBackIos color={`${isDark ? 'white' : 'black'}`} size={20} />
 					</div>
 
 					<div
@@ -87,7 +89,13 @@ const Sidebar = (props: adminProps) => {
 								className={`sidebar-item ${page === 'admin' && item.link === '' ? 'active' : page === item.link ? 'active' : ''}`}>
 								<div className='sidebar-item__wrap'>
 									<div className='sidebar-item__iconWrap'>
-										<item.img className='icon' size={24} color={`${page === item.link ? '#4318FF' : 'black'}`} />
+										<item.img
+											className='icon'
+											size={24}
+											color={
+												isDark ? `${page === item.link ? '#4318FF' : 'white'}` : `${page === item.link ? '#4318FF' : 'black'}`
+											}
+										/>
 									</div>
 									<h3 className='sidebar-item__title'>{item.name}</h3>
 								</div>

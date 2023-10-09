@@ -169,4 +169,7 @@ export const LoginStyled = styled.div`
 			}
 		}
 	}
+	input {
+		color: var(--title-color);
+	}
 `;

@@ -34,7 +34,7 @@ export const teacherLogin = async (req: Request, res: Response) => {
 				teacherType: teacher.type.name,
 			},
 
-			message: 'Admin muvaffaqiyatli tizimga kirdi!',
+			message: 'Oqituvchi muvaffaqiyatli tizimga kirdi!',
 		});
 	} catch (error) {
 		console.log(error);
@@ -184,7 +184,7 @@ export const teacherRegister = async (req: Request, res: Response) => {
 	}
 };
 export const addTeacher = async (req: Request, res: Response) => {
-	const { firstName, lastName, userName, email, password, phone, typeId, adminTypeId, groupId, userTypeId } = req.body;
+	const { firstName, lastName, userName, email, password, phone, typeId, groupId, userTypeId } = req.body;
 
 	try {
 		const isHasEmail = await prisma.teacher.findUnique({
@@ -217,41 +217,24 @@ export const addTeacher = async (req: Request, res: Response) => {
 			return res.status(409).json({ error: 'Bunday telefon raqam mavjud!' });
 		}
 
-		const isSuperAdmin = await prisma.adminType.findUnique({
+		const isHasGroup = await prisma.teacher.findMany({
 			where: {
-				id: +adminTypeId,
-				name: 'super',
+				type: {
+					id: typeId,
+				},
+				GroupTeacher: {
+					some: {
+						groupId,
+					},
+				},
+			},
+			include: {
+				type: true,
 			},
 		});
-
-		const isHasSuperAdmin = await prisma.adminType.findFirst({
-			where: {
-				OR: [
-					{
-						Admin: {
-							some: {
-								typeId: isSuperAdmin?.id,
-							},
-						},
-					},
-					{
-						Teacher: {
-							some: {
-								typeId: isSuperAdmin?.id,
-							},
-						},
-					},
-				],
-			},
-		});
-
-		console.log(isHasSuperAdmin);
-		console.log(isSuperAdmin);
-
-		if (isSuperAdmin && isHasSuperAdmin) {
-			return res.status(409).json({ error: 'Super admin allaqachon mavjud!' });
+		if (isHasGroup.length > 0) {
+			return res.status(409).json({ error: `Tanlagan guruhda ${isHasGroup[0]?.type?.name} mavjud!` });
 		}
-
 		const hashPassword = await bcrypt.hash(password, 10);
 
 		// Create the teacher
@@ -273,11 +256,11 @@ export const addTeacher = async (req: Request, res: Response) => {
 						id: userTypeId,
 					},
 				},
-				adminType: {
-					connect: {
-						id: adminTypeId,
-					},
-				},
+				// adminType: {
+				// 	connect: {
+				// 		id: adminTypeId,
+				// 	},
+				// },
 			},
 		});
 
@@ -295,7 +278,7 @@ export const addTeacher = async (req: Request, res: Response) => {
 			if (!hasGroupId) {
 				return res.status(200).json({
 					message: "O'qituvchi muvaffaqiyatli bazaga qo'shildi!",
-					error: "O'qituvchi guruhga biriktirilmadi!",
+					warning: "O'qituvchi guruhga biriktirilmadi!",
 				});
 			}
 
@@ -317,17 +300,33 @@ export const addTeacher = async (req: Request, res: Response) => {
 export const getTeacher = async (req: Request, res: Response) => {
 	try {
 		const token = req.headers.authorization?.split(' ')[1] || '';
+		console.log(token);
 		const id = (jwt.verify(token, 'secret') as JwtPayload).teacherId;
-		if (id) {
-			return res.status(404).json({ error: 'Token xatosi!' });
+		if (!id) {
+			return res.status(404).json({ id, error: 'Token xatosi!' });
 		}
-		const admin = await prisma.admin.findUnique({
+		const teacher = await prisma.teacher.findUnique({
 			where: { id },
+			include: {
+				type: true,
+				userType: true,
+				adminType: true,
+			},
 		});
-		if (!admin) {
+		if (!teacher) {
 			return res.status(404).json({ error: 'Admin topilmadi!' });
 		}
-		res.status(200).json({ admin });
+		res.status(200).json({
+			user: {
+				token,
+				userType: teacher.userType.name,
+				fistName: teacher.firstName,
+				lastName: teacher.lastName,
+				adminType: teacher.adminType?.name,
+				teacherType: teacher.type.name,
+			},
+			message: 'Autentifikatsiya muvaffaqiyatli amalga oshirildi!',
+		});
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({ error: 'Serverda xatolik yuz berdi!' });
@@ -335,19 +334,86 @@ export const getTeacher = async (req: Request, res: Response) => {
 };
 export const getTeachers = async (req: Request, res: Response) => {
 	try {
-		const admins = await prisma.admin.findMany({
+		const teachers = await prisma.teacher.findMany({
+			include: {
+				type: true,
+			},
+		});
+		res.status(200).json(teachers);
+	} catch (error) {
+		console.log(error);
+		res.status(500).json({ error: 'Serverda xatolik yuz berdi!' });
+	}
+};
+export const getTotal = async (req: Request, res: Response) => {
+	try {
+		const token = req.headers.authorization?.split(' ')[1] || '';
+		if (!token) {
+			return res.status(500).json({ error: 'Token xatosi!' });
+		}
+		const validToken = jwt.verify(token, 'secret') as JwtPayload;
+		if (!validToken) {
+			return res.status(401).json({ error: 'token xato' });
+		}
+		const id = validToken.teacherId;
+		const lessons = await prisma.lesson.findMany({
 			where: {
-				type: {
-					name: {
-						not: 'super',
+				day: new Date().getDate(),
+				isAttandance: false,
+				group: {
+					GroupTeacher: {
+						some: {
+							teacherId: id,
+						},
+					},
+				},
+			},
+			include: {
+				group: {
+					include: {
+						GroupTeacher: {
+							include: {
+								teacher: true,
+							},
+						},
+						dayPart: true,
+						room: true,
+						type: {
+							include: {
+								sciense: true,
+							},
+						},
 					},
 				},
 			},
 		});
-		if (!admins || admins?.length === 0) {
-			return res.status(404).json({ error: "Adminlar yo'q!" });
-		}
-		res.status(200).json({ admins });
+		const groups = await prisma.group.findMany({
+			where: {
+				GroupTeacher: {
+					some: {
+						teacherId: id,
+					},
+				},
+			},
+			include: {
+				GroupTeacher: {
+					include: {
+						teacher: true,
+					},
+				},
+				room: true,
+				weekPart: true,
+				type: {
+					include: {
+						sciense: true,
+					},
+				},
+				dayPart: true,
+				Student: true,
+			},
+		});
+
+		res.status(200).json({ lessons, groups });
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({ error: 'Serverda xatolik yuz berdi!' });

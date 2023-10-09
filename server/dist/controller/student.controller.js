@@ -177,8 +177,18 @@ const getStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.getStudent = getStudent;
 const getStudents = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const students = yield prisma_1.default.student.findMany({
+            include: {
+                Muster: true,
+                group: true,
+            },
+        });
+        res.status(200).json(students);
     }
-    catch (error) { }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Serverda xatolik yuz berdi!' });
+    }
 });
 exports.getStudents = getStudents;
 const getStudentByGroup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {

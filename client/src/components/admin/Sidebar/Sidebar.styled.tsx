@@ -42,13 +42,12 @@ export const SidebarStyled = styled.div`
 		}
 	}
 	.sidebar {
-		background-color: white;
+		background-color: var(--bg);
 		width: 25rem;
 		flex-shrink: 0;
 		overflow: hidden;
 		transition: 0.3s;
 		height: 100%;
-		
 		opacity: 0.99;
 		&-list {
 			width: 100%;

@@ -10,7 +10,7 @@ const studentRouter = express_1.default.Router();
 studentRouter.post('/add', adminAuth_1.default, student_controller_1.addStudent);
 studentRouter.post('/register', student_controller_1.studentRegister);
 studentRouter.post('/login', student_controller_1.studentLogin);
-studentRouter.get('/all', student_controller_1.getStudents);
+studentRouter.get('/all', adminAuth_1.default, student_controller_1.getStudents);
 studentRouter.get('/groupId/:groupId', adminAuth_1.default, student_controller_1.getStudentByGroup);
 studentRouter.get('/getUser', student_controller_1.getStudent);
 exports.default = studentRouter;

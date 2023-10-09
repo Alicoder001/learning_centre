@@ -5,12 +5,9 @@ import { RootState } from '../../../redux/store/intex';
 import { useDispatch } from 'react-redux';
 import { adminFailure, adminStart, groupsSucces } from '../../../redux/slice/adminSlice';
 import axios from '../../../service/api';
-import { spawn } from 'child_process';
 import { Link } from 'react-router-dom';
-
 const AdminGroups = () => {
 	const { groups }: any = useSelector((state: RootState) => state.admin);
-
 	const { controlType, link, totalFinished } = useSelector((state: RootState) => state.total);
 	const dispatch = useDispatch();
 	const getGroups = async () => {

@@ -100,7 +100,24 @@ export const adminRegister = async (req: Request, res: Response) => {
 		}
 		const hashPassword = await bcrypt.hash(password, 10);
 		const admin = await prisma.admin.create({
-			data: { firstName, lastName, userName, email, password: hashPassword, phone, typeId, userTypeId },
+			data: {
+				firstName,
+				lastName,
+				userName,
+				email,
+				password: hashPassword,
+				phone,
+				type: {
+					connect: {
+						id: typeId,
+					},
+				},
+				userType: {
+					connect: {
+						id: userTypeId,
+					},
+				},
+			},
 			include: {
 				type: true,
 				userType: true,
@@ -246,6 +263,38 @@ export const getAdmins = async (req: Request, res: Response) => {
 			return res.status(404).json({ error: "Adminlar yo'q!" });
 		}
 		res.status(200).json({ admins });
+	} catch (error) {
+		console.log(error);
+		res.status(500).json({ error: 'Serverda xatolik yuz berdi!' });
+	}
+};
+export const getTotal = async (req: Request, res: Response) => {
+	try {
+		const lessons = await prisma.lesson.findMany({
+			where: {
+				day: new Date().getDate(),
+				isAttandance: false,
+			},
+			include: {
+				group: {
+					include: {
+						GroupTeacher: {
+							include: {
+								teacher: true,
+							},
+						},
+						dayPart: true,
+						room: true,
+						type: {
+							include: {
+								sciense: true,
+							},
+						},
+					},
+				},
+			},
+		});
+		res.status(200).json({ lessons });
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({ error: 'Serverda xatolik yuz berdi!' });

@@ -4,6 +4,9 @@ import { NavbarAdminStyled } from './NavbarAdmin.styled';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { useDispatch } from 'react-redux';
 import { userLogOut } from '../../../redux/slice/userSlice';
+import { setMode } from '../../../redux/slice/totalSlice';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/store/intex';
 interface adminProps {
 	isShowSidebar: Boolean;
 	setShowSidebar: Function;
@@ -11,6 +14,7 @@ interface adminProps {
 const NavbarAdmin = (props: adminProps) => {
 	const { setShowSidebar } = props;
 	const dispatch = useDispatch();
+	const { isDark } = useSelector((state: RootState) => state.total);
 	return (
 		<NavbarAdminStyled className='admin-navbar'>
 			<div className='container'>
@@ -35,7 +39,11 @@ const NavbarAdmin = (props: adminProps) => {
 					<div className='right-wrapper__notification'>
 						<img src={notificationLight} className='right-wrapper__notificationIcon' alt='notification' />
 					</div>
-					<div className='right-wrapper__mode'>
+					<div
+						onClick={() => {
+						dispatch(setMode(isDark));
+						}}
+						className='right-wrapper__mode'>
 						<img src={moonLight} className='right-wrapper__modeIcon' alt='moon' />
 					</div>
 					<div className='right-wrapper__info'>

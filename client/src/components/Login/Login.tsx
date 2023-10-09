@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store/intex';
 import { userLogin } from '../../service/user';
 import { useDispatch } from 'react-redux';
+import { setMode } from '../../redux/slice/totalSlice';
 
 const Login = () => {
 	const [email, setEmail] = useState('');
@@ -15,7 +16,7 @@ const Login = () => {
 	const dispatch = useDispatch();
 	const { link } = useSelector((state: RootState) => state.total);
 	const { isLoggedIn, userType } = useSelector((state: RootState) => state.user);
-
+	const { isDark } = useSelector((state: RootState) => state.total);
 	const typeList = [
 		{ id: 1, type: 'admin' },
 		{ id: 2, type: 'teacher' },
@@ -88,7 +89,14 @@ const Login = () => {
 							<p className='login-wrapper__box-subt'>{type} uchun</p>
 						</div>
 						<div className='login-wrapper__mode'>
-							<img src={moonLoginLight} alt='' />
+							<img
+								onClick={() => {
+									setMode(isDark);
+									console.log(isDark);
+								}}
+								src={moonLoginLight}
+								alt=''
+							/>
 						</div>
 					</div>
 				</div>

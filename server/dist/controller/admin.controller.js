@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAdmins = exports.getAdmin = exports.addAdmin = exports.adminRegister = exports.adminLogin = void 0;
+exports.getTotal = exports.getAdmins = exports.getAdmin = exports.addAdmin = exports.adminRegister = exports.adminLogin = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const prisma_1 = __importDefault(require("../db/prisma"));
@@ -116,7 +116,24 @@ const adminRegister = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
         const hashPassword = yield bcrypt_1.default.hash(password, 10);
         const admin = yield prisma_1.default.admin.create({
-            data: { firstName, lastName, userName, email, password: hashPassword, phone, typeId, userTypeId },
+            data: {
+                firstName,
+                lastName,
+                userName,
+                email,
+                password: hashPassword,
+                phone,
+                type: {
+                    connect: {
+                        id: typeId,
+                    },
+                },
+                userType: {
+                    connect: {
+                        id: userTypeId,
+                    },
+                },
+            },
             include: {
                 type: true,
                 userType: true,
@@ -274,3 +291,37 @@ const getAdmins = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getAdmins = getAdmins;
+const getTotal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const lessons = yield prisma_1.default.lesson.findMany({
+            where: {
+                day: new Date().getDate(),
+                isAttandance: false,
+            },
+            include: {
+                group: {
+                    include: {
+                        GroupTeacher: {
+                            include: {
+                                teacher: true,
+                            },
+                        },
+                        dayPart: true,
+                        room: true,
+                        type: {
+                            include: {
+                                sciense: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+        res.status(200).json({ lessons });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Serverda xatolik yuz berdi!' });
+    }
+});
+exports.getTotal = getTotal;

@@ -1,10 +1,12 @@
 import express from 'express';
-import { addTeacher, getTeacher, getTeachers, teacherLogin, teacherRegister } from '../controller/teacher.controller';
+import { addTeacher, getTeacher, getTeachers, getTotal, teacherLogin, teacherRegister } from '../controller/teacher.controller';
 import adminAuth from '../middleware/adminAuth';
+import teacherAuth from '../middleware/teacher.Auth';
 const teacherRouter = express.Router();
 teacherRouter.post('/register', teacherRegister);
 teacherRouter.post('/login', teacherLogin);
 teacherRouter.post('/add', adminAuth, addTeacher);
 teacherRouter.get('/getUser', getTeacher);
-teacherRouter.get('/all', getTeachers);
+teacherRouter.get('/all', adminAuth, getTeachers);
+teacherRouter.get('/total', teacherAuth, getTotal);
 export default teacherRouter;

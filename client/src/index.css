@@ -1,4 +1,3 @@
-
 :root {
 	--bg: #f4f7fe;
 	--title-color: #2b3674;
@@ -8,9 +7,19 @@
 	--card-wrap: #fff;
 	--shadow-color: 0px 18px 40px 0px rgba(112, 144, 176, 0.12);
 	--line-color: #e0e5f2;
+}
+.dark {
+	--bg: #0b1437;
+	--title-color: #fff;
+	--subt-color: #a3aed0;
+	--primary-btn-bg: #3965ff;
+	--card-bg: #1b254b;
+	--card-wrap: #111c44;
+	--shadow-color: 0;
+	--line-color: rgba(255, 255, 255, 0.1);
 	--item-hover: rgba(140, 177, 247, 0.5);
 	--navbar-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.12);
-	--box-shadow: 0 0 10px 2px rgba(6, 5, 61,0.2);
+	--box-shadow: 0 0 10px 2px rgba(6, 5, 61, 0.2);
 }
 ::-webkit-scrollbar {
 	width: 0px;
@@ -24,16 +33,7 @@
 ::-webkit-scrollbar-track {
 	background-color: transparent;
 }
-.dark {
-	--bg: #0b1437;
-	--title-color: #fff;
-	--subt-color: #a3aed0;
-	--primary-btn-bg: #3965ff;
-	--card-bg: #1b254b;
-	--card-wrap: #111c44;
-	--shadow-color: 0;
-	--line-color: rgba(255, 255, 255, 0.1);
-}
+
 * {
 	box-sizing: border-box;
 	margin: 0;
@@ -49,7 +49,7 @@ body {
 	display: flex;
 	flex-direction: column;
 	height: 100%;
-	background-color: var(--bg);
+	transition: 0.3s;
 	font-family: 'Plus Jakarta Sans', sans-serif;
 }
 #root {

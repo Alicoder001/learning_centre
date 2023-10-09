@@ -46,55 +46,72 @@ totalInfoRouter.get('/all', (req, res) => __awaiter(void 0, void 0, void 0, func
                 link: false,
             },
         });
-        const total = response[0];
-        const { controlType } = total, rest = __rest(total, ["controlType"]);
-        const studentCount = yield prisma_1.default.student.count({});
-        const teacherCount = yield prisma_1.default.teacher.count({});
-        const groups = yield prisma_1.default.group.findMany({});
-        const teachers = yield prisma_1.default.group.findMany({});
-        const groupType = yield prisma_1.default.groupType.findMany({});
-        const dayPart = yield prisma_1.default.dayPart.findMany({});
-        const teacherName = yield prisma_1.default.teacher.findMany({});
-        const weekPart = yield prisma_1.default.weekPart.findMany({});
-        const rooms = yield prisma_1.default.room.findMany({});
-        const lessons = yield prisma_1.default.lesson.findMany({
-            where: {
-                day: new Date().getDate(),
-                isAttandance: false,
-            },
-            include: {
-                group: {
-                    include: {
-                        GroupTeacher: {
-                            include: {
-                                teacher: true,
+        if (response.length !== 0) {
+            console.log(response);
+            const total = response[0];
+            const { controlType } = total, rest = __rest(total, ["controlType"]);
+            const studentCount = yield prisma_1.default.student.count({});
+            const teacherCount = yield prisma_1.default.teacher.count({});
+            const groups = yield prisma_1.default.group.findMany({});
+            const teachers = yield prisma_1.default.group.findMany({});
+            const groupType = yield prisma_1.default.groupType.findMany({});
+            const dayPart = yield prisma_1.default.dayPart.findMany({});
+            const teacherName = yield prisma_1.default.teacher.findMany({});
+            const weekPart = yield prisma_1.default.weekPart.findMany({});
+            const rooms = yield prisma_1.default.room.findMany({});
+            const teacherTypes = yield prisma_1.default.teacherType.findMany({});
+            const userTypes = yield prisma_1.default.userType.findMany({
+                where: {
+                    NOT: {
+                        name: 'admin',
+                    },
+                },
+            });
+            const lessons = yield prisma_1.default.lesson.findMany({
+                where: {
+                    day: new Date().getDate(),
+                    isAttandance: false,
+                },
+                include: {
+                    group: {
+                        include: {
+                            GroupTeacher: {
+                                include: {
+                                    teacher: true,
+                                },
                             },
-                        },
-                        dayPart: true,
-                        room: true,
-                        type: {
-                            include: {
-                                sciense: true,
+                            dayPart: true,
+                            room: true,
+                            type: {
+                                include: {
+                                    sciense: true,
+                                },
                             },
                         },
                     },
                 },
-            },
-        });
-        res.status(200).json(Object.assign(Object.assign({}, rest), { link: (controlType === null || controlType === void 0 ? void 0 : controlType.link) ? controlType.link : '', controlType: (controlType === null || controlType === void 0 ? void 0 : controlType.name) ? controlType.name : null, studentCount,
-            teacherCount,
-            lessons,
-            rooms,
-            teachers,
-            token,
-            groups,
-            types,
-            dayPart,
-            teacherName,
-            weekPart,
-            groupType }));
+            });
+            res.status(200).json(Object.assign(Object.assign({}, rest), { link: (controlType === null || controlType === void 0 ? void 0 : controlType.link) ? controlType.link : '', controlType: (controlType === null || controlType === void 0 ? void 0 : controlType.name) ? controlType.name : null, studentCount,
+                teacherCount,
+                lessons,
+                rooms,
+                teachers,
+                token,
+                groups,
+                types,
+                dayPart,
+                teacherName,
+                weekPart,
+                groupType,
+                teacherTypes,
+                userTypes }));
+        }
+        else {
+            res.status(400).json({ error: "Ma'lumot topilmadi!" });
+        }
     }
     catch (error) {
+        console.log(error);
         res.status(500).json({ error: 'Serverda xatolik yuz berdi!' });
     }
 }));

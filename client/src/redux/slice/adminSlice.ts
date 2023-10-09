@@ -15,6 +15,8 @@ const initialState = {
 	error: null,
 	message: null,
 	groupCreated: true,
+	teacherCreated: true,
+	todayLessons: [],
 };
 const adminSlice = createSlice({
 	name: 'admin',
@@ -26,9 +28,9 @@ const adminSlice = createSlice({
 		adminSucces(state, action) {
 			state.isLoading = false;
 			state.isFinished = true;
+			state.todayLessons = action?.payload?.lessons;
 		},
 		adminFailure(state, action) {
-            
 			(state.isLoading = false), (state.error = action?.payload || null);
 			state.message = null;
 			state.groupCreated = false;
@@ -40,29 +42,43 @@ const adminSlice = createSlice({
 		},
 		groupDetailSucces(state, action) {
 			state.isLoading = false;
-			state.groupDetail = action.payload;
+			state.groupDetail = action?.payload;
 			state.isFinished = true;
 		},
 		teachereSucces(state, action) {
 			state.isLoading = false;
-			state.teachers = action.payload;
+			state.teachers = action?.payload;
 			state.isFinished = true;
 		},
 		studentsSucces(state, action) {
 			state.isLoading = false;
-			state.students = action.payload;
+			state.students = action?.payload;
 			state.isFinished = true;
 		},
 		groupCreateSlice(state, action) {
-			const { error, message } = action.payload;
+			const { error, message } = action?.payload;
 			state.isLoading = false;
 			state.message = message || null;
 			state.isFinished = true;
 			state.error = error || null;
 			state.groupCreated = true;
 		},
+		teacherCreateSlice(state, action) {
+			const { error, message } = action?.payload;
+			state.isLoading = false;
+			state.message = message || null;
+			state.isFinished = true;
+			state.error = error || null;
+		},
+		studentCreateSlice(state, action) {
+			const { error, message } = action?.payload;
+			state.isLoading = false;
+			state.message = message || null;
+			state.isFinished = true;
+			state.error = error || null;
+		},
 	},
 });
-export const { adminSucces, adminStart, adminFailure, groupsSucces, groupDetailSucces, teachereSucces, studentsSucces, groupCreateSlice } =
+export const { adminSucces, adminStart, adminFailure, groupsSucces, groupDetailSucces, teachereSucces, studentsSucces, groupCreateSlice,teacherCreateSlice,studentCreateSlice } =
 	adminSlice.actions;
 export default adminSlice.reducer;

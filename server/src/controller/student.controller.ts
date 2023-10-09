@@ -95,7 +95,7 @@ export const addStudent = async (req: Request, res: Response) => {
 		});
 		if (isHasUserName) {
 			return res.status(409).json({ error: 'Bunday userName mavjud!' });
-		}   
+		}
 		const isHasPhone = await prisma.student.findUnique({
 			where: {
 				phone,
@@ -153,7 +153,17 @@ export const getStudent = async (req: Request, res: Response) => {
 };
 export const getStudents = async (req: Request, res: Response) => {
 	try {
-	} catch (error) {}
+		const students = await prisma.student.findMany({
+			include: {
+				Muster: true,
+				group: true,
+			},
+		});
+		res.status(200).json(students);
+	} catch (error) {
+		console.log(error);
+		res.status(500).json({ error: 'Serverda xatolik yuz berdi!' });
+	}
 };
 export const getStudentByGroup = async (req: Request, res: Response) => {
 	try {

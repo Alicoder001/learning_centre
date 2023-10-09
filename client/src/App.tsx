@@ -20,13 +20,15 @@ import Analystics from './pages/admin/Analystics/Analystics';
 import AdminGroupCreate from './pages/admin/AdminGroups/AdminGroupCreate/AdminGroupCreate';
 import Home from './pages/Home.tsx/Home';
 import TeacherLayout from './layouts/TeacherLayout/TeacherLayout';
+import AdminTeacherCreate from './pages/admin/Teachers/AdminTeacherCreate/AdminTeacherCreate';
+import AdminStudentCreate from './pages/admin/Students/AdminStudentCreate/AdminStudentCreate';
 
 function App() {
 	const dispatch = useDispatch();
 	useEffect(() => {
 		getTotalInfo(dispatch);
 	}, []);
-
+	const { isDark } = useSelector((state: RootState) => state.total);
 	const routes = createBrowserRouter(
 		createRoutesFromElements(
 			<Route path='/' element={<RootLayout />}>
@@ -41,8 +43,10 @@ function App() {
 					<Route path='students' element={<Students />} />
 					<Route path='groups' element={<AdminGroups />} />
 					<Route path='group-create' element={<AdminGroupCreate />} />
+					<Route path='teacher-create' element={<AdminTeacherCreate />} />
+					<Route path='student-create' element={<AdminStudentCreate />} />
 				</Route>
-				<Route path='admin' element={<TeacherLayout />}>
+				<Route path='teacher' element={<TeacherLayout />}>
 					<Route index element={<AdminDashboard />} />
 					<Route path='transaction' element={<AdminTransaction />} />
 					<Route path='analystic' element={<Analystics />} />
@@ -56,7 +60,7 @@ function App() {
 		),
 	);
 	return (
-		<div className='App'>
+		<div className={`App ${isDark ? 'dark' : ''}`}>
 			<RouterProvider router={routes} />
 		</div>
 	);

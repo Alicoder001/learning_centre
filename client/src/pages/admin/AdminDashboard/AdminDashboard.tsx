@@ -4,10 +4,10 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/intex';
 
 const AdminDashboard = () => {
-	let { studentCount, teacherCount, lessons } = useSelector((state: RootState) => state.total);
-
+	const { studentCount, teacherCount, groups } = useSelector((state: RootState) => state.total);
+	const { todayLessons } = useSelector((state: RootState) => state.admin);
 	return (
-		<AdminDashboardStyled className='.dashboard'>
+		<AdminDashboardStyled className='dashboard'>
 			<ul className='category'>
 				<li className='category-item'>
 					<h3>O'quvchilar</h3>
@@ -19,17 +19,17 @@ const AdminDashboard = () => {
 				</li>
 				<li className='category-item'>
 					<h3>Guruhlar</h3>
-					<p>550</p>
+					<p>{groups.length}</p>
 				</li>
 				<li className='category-item'>
 					<h3>Xodimlar</h3>
-					<p>550</p>
+					<p>0</p>
 				</li>
 			</ul>
 			<div className='lessons'>
 				<h1 className='lessons-title'>Bugungi darslar jadvali</h1>
 				<ul className='lessons-list'>
-					{lessons?.map((item: any) => {
+					{todayLessons?.map((item: any) => {
 						return (
 							<li key={item?.id} className={`lessons-item ${item.isNotDone && 'not-done'}`}>
 								<div className='lessons-item__left'>

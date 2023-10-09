@@ -20,59 +20,75 @@ totalInfoRouter.get('/all', async (req, res) => {
 				link: false,
 			},
 		});
-		const total = response[0];
-		const { controlType, ...rest } = total;
-		const studentCount = await prisma.student.count({});
-		const teacherCount = await prisma.teacher.count({});
-		const groups = await prisma.group.findMany({});
-		const teachers = await prisma.group.findMany({});
-		const groupType = await prisma.groupType.findMany({});
-		const dayPart = await prisma.dayPart.findMany({});
-		const teacherName = await prisma.teacher.findMany({});
-		const weekPart = await prisma.weekPart.findMany({});
-		const rooms = await prisma.room.findMany({});
-		const lessons = await prisma.lesson.findMany({
-			where: {
-				day: new Date().getDate(),
-				isAttandance: false,
-			},
-			include: {
-				group: {
-					include: {
-						GroupTeacher: {
-							include: {
-								teacher: true,
+		if (response.length !== 0) {
+			console.log(response);
+			const total = response[0];
+			const { controlType, ...rest } = total;
+			const studentCount = await prisma.student.count({});
+			const teacherCount = await prisma.teacher.count({});
+			const groups = await prisma.group.findMany({});
+			const teachers = await prisma.group.findMany({});
+			const groupType = await prisma.groupType.findMany({});
+			const dayPart = await prisma.dayPart.findMany({});
+			const teacherName = await prisma.teacher.findMany({});
+			const weekPart = await prisma.weekPart.findMany({});
+			const rooms = await prisma.room.findMany({});
+			const teacherTypes = await prisma.teacherType.findMany({});
+			const userTypes = await prisma.userType.findMany({
+				where: {
+					NOT: {
+						name: 'admin',
+					},
+				},
+			});
+			const lessons = await prisma.lesson.findMany({
+				where: {
+					day: new Date().getDate(),
+					isAttandance: false,
+				},
+				include: {
+					group: {
+						include: {
+							GroupTeacher: {
+								include: {
+									teacher: true,
+								},
 							},
-						},
-						dayPart: true,
-						room: true,
-						type: {
-							include: {
-								sciense: true,
+							dayPart: true,
+							room: true,
+							type: {
+								include: {
+									sciense: true,
+								},
 							},
 						},
 					},
 				},
-			},
-		});
-		res.status(200).json({
-			...rest,
-			link: controlType?.link ? controlType.link : '',
-			controlType: controlType?.name ? controlType.name : null,
-			studentCount,
-			teacherCount,
-			lessons,
-			rooms,
-			teachers,
-			token,
-			groups,
-			types,
-			dayPart,
-			teacherName,
-			weekPart,
-			groupType,
-		});
+			});
+			res.status(200).json({
+				...rest,
+				link: controlType?.link ? controlType.link : '',
+				controlType: controlType?.name ? controlType.name : null,
+				studentCount,
+				teacherCount,
+				lessons,
+				rooms,
+				teachers,
+				token,
+				groups,
+				types,
+				dayPart,
+				teacherName,
+				weekPart,
+				groupType,
+				teacherTypes,
+				userTypes,
+			});
+		} else {
+			res.status(400).json({ error: "Ma'lumot topilmadi!" });
+		}
 	} catch (error) {
+		console.log(error);
 		res.status(500).json({ error: 'Serverda xatolik yuz berdi!' });
 	}
 });

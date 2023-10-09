@@ -30,6 +30,9 @@ const initialState = {
 	weekPart: [],
 	groupType: [],
 	rooms: null,
+	teacherTypes: [],
+	userTypes: [],
+	isDark: true,
 };
 export const totalSlice = createSlice({
 	name: 'total',
@@ -38,7 +41,7 @@ export const totalSlice = createSlice({
 		getTotalStart(state) {
 			state.isLoading = true;
 		},
-		getTotalSucces(state, action) {			
+		getTotalSucces(state, action) {
 			state.isLoading = false;
 			state.name = action?.payload?.name || '';
 			state.link = action?.payload?.link || '';
@@ -58,6 +61,8 @@ export const totalSlice = createSlice({
 			state.weekPart = action?.payload?.weekPart;
 			state.groupType = action?.payload?.groupType;
 			state.rooms = action?.payload?.rooms;
+			state.teacherTypes = action?.payload?.teacherTypes;
+			state.userTypes = action?.payload?.userTypes;
 		},
 		getTotalFailure(state, action) {
 			state.isLoading = false;
@@ -79,7 +84,11 @@ export const totalSlice = createSlice({
 			state.error = action.payload.message || 'Error!';
 			state.isLoading = false;
 		},
+		setMode(state, action) {
+			state.isDark = !action.payload;
+		},
 	},
 });
-export const { getTotalSucces, getTotalStart, getTotalFailure, updateTotalFailure, updateTotalStart, updateTotalSucces } = totalSlice.actions;
+export const { getTotalSucces, getTotalStart, getTotalFailure, updateTotalFailure, updateTotalStart, updateTotalSucces, setMode } =
+	totalSlice.actions;
 export default totalSlice.reducer;
